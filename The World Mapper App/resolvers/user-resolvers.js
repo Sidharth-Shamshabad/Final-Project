@@ -98,5 +98,20 @@ module.exports = {
       res.clearCookie('access-token')
       return true
     },
+    update: async (_, args) => {
+      const { _id, name, email, password } = args
+      const uid = new ObjectId(_id)
+      const found = await User.findOne({ _id: uid })
+      console.log('update function')
+
+      const hashed = await bcrypt.hash(password, 10)
+
+      const updated = await User.updateOne(
+        { _id: uid },
+        { name: name, email: email, password: hashed }
+      )
+      if (updated) return { name, email, hashed }
+      else return found
+    },
   },
 }

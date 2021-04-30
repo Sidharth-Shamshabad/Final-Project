@@ -18,6 +18,9 @@ import {
   ReorderItems_Transaction,
   EditItem_Transaction,
 } from '../../utils/jsTPS'
+import globe from './globe.jpeg'
+import WMMain from 'wt-frontend/build/components/wmodal/WMMain'
+import UpdateAccount from '../modals/UpdateAccount'
 
 const Homescreen = (props) => {
   const keyCombination = (e, callback) => {
@@ -41,6 +44,7 @@ const Homescreen = (props) => {
   const [showDelete, toggleShowDelete] = useState(false)
   const [showLogin, toggleShowLogin] = useState(false)
   const [showCreate, toggleShowCreate] = useState(false)
+  const [showUpdate, toggleShowUpdate] = useState(false)
   const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo())
   const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo())
 
@@ -252,19 +256,31 @@ const Homescreen = (props) => {
   const setShowLogin = () => {
     toggleShowDelete(false)
     toggleShowCreate(false)
+    toggleShowUpdate(false)
     toggleShowLogin(!showLogin)
   }
 
   const setShowCreate = () => {
     toggleShowDelete(false)
     toggleShowLogin(false)
+    toggleShowUpdate(false)
     toggleShowCreate(!showCreate)
   }
 
   const setShowDelete = () => {
     toggleShowCreate(false)
     toggleShowLogin(false)
+    toggleShowUpdate(false)
     toggleShowDelete(!showDelete)
+  }
+
+  const setShowUpdate = () => {
+    console.log('setShowUpdate test', showUpdate)
+    toggleShowDelete(false)
+    toggleShowCreate(false)
+    toggleShowLogin(false)
+    toggleShowUpdate(!showUpdate)
+    console.log('setShowUpdate test2', showUpdate)
   }
 
   const sort = (criteria) => {
@@ -281,8 +297,9 @@ const Homescreen = (props) => {
     tpsRedo()
   }
   const background_color = 'black'
+  console.log(props.user)
   return (
-    <WLayout wLayout='header-lside'>
+    <WLayout wLayout='header'>
       <WLHeader>
         <WNavbar style={{ backgroundColor: background_color }}>
           <ul>
@@ -296,6 +313,7 @@ const Homescreen = (props) => {
               auth={auth}
               setShowCreate={setShowCreate}
               setShowLogin={setShowLogin}
+              setShowUpdate={setShowUpdate}
               reloadTodos={refetch}
               setActiveList={loadTodoList}
               user={props.user}
@@ -303,46 +321,20 @@ const Homescreen = (props) => {
           </ul>
         </WNavbar>
       </WLHeader>
-
-      <WLSide side='left'>
-        <WSidebar>
-          {activeList ? (
-            <SidebarContents
-              listIDs={SidebarData}
-              activeid={activeList._id}
-              auth={auth}
-              handleSetActive={handleSetActive}
-              createNewList={createNewList}
-              updateListField={updateListField}
-              key={activeList._id}
-            />
-          ) : (
-            <></>
-          )}
-        </WSidebar>
-      </WLSide>
-      <WLMain>
-        {activeList ? (
-          <div className='container-secondary'>
-            <MainContents
-              addItem={addItem}
-              deleteItem={deleteItem}
-              editItem={editItem}
-              reorderItem={reorderItem}
-              setShowDelete={setShowDelete}
-              undo={tpsUndo}
-              redo={tpsRedo}
-              activeList={activeList}
-              setActiveList={loadTodoList}
-              canUndo={canUndo}
-              canRedo={canRedo}
-              sort={sort}
-            />
+      <WMMain>
+        {auth === false ? (
+          <div>
+            <img src={globe} alt='' className='globe-home' />
+            <h1 className='home-page-title'>
+              Welcome to the World Data Mapper
+            </h1>
           </div>
         ) : (
-          <div className='container-secondary' />
+          <div className='container-secondary'>
+            <h1>Main page</h1>
+          </div>
         )}
-      </WLMain>
+      </WMMain>
 
       {showDelete && (
         <Delete
@@ -364,6 +356,14 @@ const Homescreen = (props) => {
           fetchUser={props.fetchUser}
           reloadTodos={refetch}
           setShowLogin={setShowLogin}
+        />
+      )}
+
+      {showUpdate && (
+        <UpdateAccount
+          fetchUser={props.fetchUser}
+          user={props.user}
+          setShowUpdate={setShowUpdate}
         />
       )}
     </WLayout>

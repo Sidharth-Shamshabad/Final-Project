@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { LOGIN } from '../../cache/mutations'
+import { UPDATE } from '../../cache/mutations'
 import { useMutation } from '@apollo/client'
 
 import {
@@ -9,14 +9,20 @@ import {
   WMFooter,
   WButton,
   WInput,
+  WRow,
+  WCol,
 } from 'wt-frontend'
 
-const Login = (props) => {
-  const [input, setInput] = useState({ email: '', password: '' })
+const UpdateAccount = (props) => {
+  const name = props.user.name
+  const email = props.user.email
+  const [input, setInput] = useState({
+    email: '',
+    password: '',
+    name: '',
+  })
   const [loading, toggleLoading] = useState(false)
-  const [showErr, displayErrorMsg] = useState(false)
-  const errorMsg = 'Email/Password not found.'
-  const [Login] = useMutation(LOGIN)
+  const [Update] = useMutation(UPDATE)
 
   const updateInput = (e) => {
     const { name, value } = e.target
@@ -24,37 +30,61 @@ const Login = (props) => {
     setInput(updated)
   }
 
-  const handleLogin = async (e) => {
-    const { loading, error, data } = await Login({ variables: { ...input } })
+  const handleUpdateAccount = async (e) => {
+    for (let field in input) {
+      if (!input[field]) {
+        alert('All fields must be filled out to update')
+        return
+      }
+    }
+    const _id = props.user._id
+    const { loading, error, data } = await Update({
+      variables: { _id, ...input },
+    })
     if (loading) {
       toggleLoading(true)
     }
-    if (data.login._id === null) {
-      displayErrorMsg(true)
-      return
+    if (error) {
+      return `Error: ${error.message}`
     }
     if (data) {
-      props.fetchUser()
-      props.reloadTodos()
+      console.log(data)
       toggleLoading(false)
-      props.setShowLogin(false)
+      //   if (data.register.email === 'already exists') {
+      //     alert('User with that email already registered')
+      //   } else {
+      //     props.fetchUser()
+      //   }
+      props.setShowUpdate(false)
     }
   }
 
   return (
-    <WModal className='login-modal' cover='true' visible={props.setShowLogin}>
+    <WModal className='signup-modal' cover='true' visible={props.setShowUpdate}>
       <WMHeader
         className='modal-header'
         style={{ backgroundColor: 'red', fontWeight: 'bold' }}
-        onClose={() => props.setShowLogin(false)}
+        onClose={() => props.setShowUpdate(false)}
       >
-        Login To Your Account
+        Enter Updated Account Information
       </WMHeader>
 
       {loading ? (
         <div />
       ) : (
-        <WMMain className='main-login-modal'>
+        <WMMain style={{ backgroundColor: 'black' }}>
+          <WInput
+            className='modal-input'
+            onBlur={updateInput}
+            name='name'
+            labelAnimation='up'
+            barAnimation='solid'
+            labelText='Name'
+            wType='outlined'
+            inputType='text'
+            defaultValue={props.user.name}
+          />
+          <div className='modal-spacer'>&nbsp;</div>
           <WInput
             className='modal-input'
             onBlur={updateInput}
@@ -64,6 +94,7 @@ const Login = (props) => {
             labelText='Email Address'
             wType='outlined'
             inputType='text'
+            defaultValue={props.user.email}
           />
           <div className='modal-spacer'>&nbsp;</div>
           <WInput
@@ -76,29 +107,29 @@ const Login = (props) => {
             wType='outlined'
             inputType='password'
           />
-
-          {showErr ? (
-            <div className='modal-error'>{errorMsg}</div>
-          ) : (
-            <div className='modal-error'>&nbsp;</div>
-          )}
         </WMMain>
       )}
-      <WMFooter style={{ display: 'flex', flexDirection: 'horizontal' }}>
+      <WMFooter
+        style={{
+          display: 'flex',
+          flexDirection: 'horizontal',
+          backgroundColor: 'black',
+        }}
+      >
         <WButton
           className='modal-button cancel-account-button'
-          onClick={handleLogin}
+          onClick={handleUpdateAccount}
           span
           clickAnimation='ripple-light'
           hoverAnimation='fill'
           shape='rounded'
           color='secondary'
         >
-          Login
+          Update
         </WButton>
         <WButton
           className='modal-button cancel-account-button'
-          onClick={() => props.setShowLogin(false)}
+          onClick={() => props.setShowUpdate(false)}
           span
           clickAnimation='ripple-light'
           hoverAnimation='fill'
@@ -113,4 +144,4 @@ const Login = (props) => {
   )
 }
 
-export default Login
+export default UpdateAccount

@@ -16,13 +16,6 @@ const LoggedIn = (props) => {
     }
   }
 
-  const getUsername = async (e) => {
-    const { data } = await props.fetchUser()
-    if (data) {
-      return data
-    }
-  }
-
   //   const dataInfo = getUsername()
   console.log('This is data from NavbarOptions', props)
 
@@ -31,10 +24,10 @@ const LoggedIn = (props) => {
       <WNavItem hoverAnimation='lighten'>
         <WButton
           className='navbar-options'
-          //   onClick={props.setShowCreate}
+          onClick={props.setShowUpdate}
           wType='texted'
           hoverAnimation='text-primary'
-          style={{ color: '#ec88df' }}
+          style={{ color: 'orange' }}
         >
           {props.user.name}
         </WButton>
@@ -95,6 +88,7 @@ const NavbarOptions = (props) => {
         <LoggedIn
           fetchUser={props.fetchUser}
           setActiveList={props.setActiveList}
+          setShowUpdate={props.setShowUpdate}
           logout={props.logout}
           user={props.user}
         />

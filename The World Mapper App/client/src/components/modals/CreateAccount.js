@@ -58,6 +58,7 @@ const CreateAccount = (props) => {
     <WModal className='signup-modal' cover='true' visible={props.setShowCreate}>
       <WMHeader
         className='modal-header'
+        style={{ backgroundColor: 'red', fontWeight: 'bold' }}
         onClose={() => props.setShowCreate(false)}
       >
         Create a New Account
@@ -66,7 +67,7 @@ const CreateAccount = (props) => {
       {loading ? (
         <div />
       ) : (
-        <WMMain>
+        <WMMain style={{ backgroundColor: 'black' }}>
           <WInput
             className='modal-input'
             onBlur={updateInput}
@@ -101,15 +102,21 @@ const CreateAccount = (props) => {
           />
         </WMMain>
       )}
-      <WMFooter style={{ display: 'flex', flexDirection: 'horizontal' }}>
+      <WMFooter
+        style={{
+          display: 'flex',
+          flexDirection: 'horizontal',
+          backgroundColor: 'black',
+        }}
+      >
         <WButton
-          className='modal-button'
+          className='modal-button cancel-account-button'
           onClick={handleCreateAccount}
           span
           clickAnimation='ripple-light'
-          hoverAnimation='darken'
+          hoverAnimation='fill'
           shape='rounded'
-          color='primary'
+          color='secondary'
         >
           Submit
         </WButton>
@@ -121,6 +128,7 @@ const CreateAccount = (props) => {
           hoverAnimation='fill'
           shape='rounded'
           color='secondary'
+          style={{ marginLeft: '100px' }}
         >
           Cancel
         </WButton>

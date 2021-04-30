@@ -1,6 +1,6 @@
 @use 'node_modules/wt-frontend/build/global/theme' with (
     $primary-color: #ffc800,
-    $background-color: rgb(64, 69, 78),//#d9d6cc,
+    $background-color: rgb(56, 56, 56),//#d9d6cc,
     $navbar-background-color: #353a44,//rgb(64, 69, 78),
     $sidebar-background-color: #2b2e36,//#353a44,
     $text-color: #e9edf0,
@@ -206,7 +206,9 @@ body {
 
 .modal-header {
   color: $text-color;
-  font-size: 28px;
+  font-size: 20px;
+  padding: 15px 15px 15px 30px;
+  text-align: center;
 }
 
 .navbar-options {
@@ -237,4 +239,8 @@ body {
 
 .cancel-account-button:hover {
   background-color: gray;
+}
+
+.login-modal {
+  background-color: black;
 }
