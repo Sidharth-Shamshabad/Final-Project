@@ -56,6 +56,7 @@ const UpdateAccount = (props) => {
       //     props.fetchUser()
       //   }
       props.setShowUpdate(false)
+      props.fetchUser()
     }
   }
 

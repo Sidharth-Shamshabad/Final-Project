@@ -3,7 +3,14 @@ import Homescreen from './components/homescreen/Homescreen'
 import { useQuery } from '@apollo/client'
 import * as queries from './cache/queries'
 import { jsTPS } from './utils/jsTPS'
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
+import {
+  BrowserRouter,
+  Switch,
+  Route,
+  Redirect,
+  useHistory,
+} from 'react-router-dom'
+import Dashboard from './components/main/Dashboard'
 
 const App = () => {
   let user = null
@@ -19,28 +26,44 @@ const App = () => {
     console.log(loading)
   }
   if (data) {
+    // console.log(history)
     let { getCurrentUser } = data
     if (getCurrentUser !== null) {
       user = getCurrentUser
     }
   }
+  let history = useHistory()
+  console.log(history)
   return (
-    <BrowserRouter>
+    <BrowserRouter history={history}>
       <Switch>
-        <Redirect exact from='/' to={{ pathname: '/home' }} />
         <Route
-          path='/home'
-          name='home'
+          path='/'
+          exact={true}
+          name='welcome'
           render={() => (
             <Homescreen
               tps={transactionStack}
               fetchUser={refetch}
               user={user}
               refreshTps={refreshTps}
+              history={history}
             />
           )}
         />
-        <Route />
+        <Route
+          path='/home'
+          name='home'
+          render={() => (
+            <Dashboard
+              tps={transactionStack}
+              fetchUser={refetch}
+              user={user}
+              refreshTps={refreshTps}
+              history={history}
+            />
+          )}
+        />
       </Switch>
     </BrowserRouter>
   )

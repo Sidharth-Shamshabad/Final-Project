@@ -22,9 +22,8 @@ import globe from './globe.jpeg'
 import WMMain from 'wt-frontend/build/components/wmodal/WMMain'
 import UpdateAccount from '../modals/UpdateAccount'
 import { useHistory } from 'react-router'
-import Header from '../main/Header'
 
-const Homescreen = (props) => {
+const Header = (props) => {
   const keyCombination = (e, callback) => {
     if (e.key === 'z' && e.ctrlKey) {
       if (props.tps.hasTransactionToUndo()) {
@@ -37,7 +36,6 @@ const Homescreen = (props) => {
     }
   }
   document.onkeydown = keyCombination
-
   const auth = props.user === null ? false : true
   let todolists = []
   let SidebarData = []
@@ -139,126 +137,6 @@ const Homescreen = (props) => {
     }
   }
 
-  const addItem = async () => {
-    let list = activeList
-    const items = list.items
-    const newItem = {
-      _id: '',
-      description: 'No Description',
-      due_date: 'No Date',
-      assigned_to: 'No One',
-      completed: false,
-    }
-    let opcode = 1
-    let itemID = newItem._id
-    let listID = activeList._id
-    let transaction = new UpdateListItems_Transaction(
-      listID,
-      itemID,
-      newItem,
-      opcode,
-      AddTodoItem,
-      DeleteTodoItem
-    )
-    props.tps.addTransaction(transaction)
-    tpsRedo()
-  }
-
-  const deleteItem = async (item, index) => {
-    let listID = activeList._id
-    let itemID = item._id
-    let opcode = 0
-    let itemToDelete = {
-      _id: item._id,
-      description: item.description,
-      due_date: item.due_date,
-      assigned_to: item.assigned_to,
-      completed: item.completed,
-    }
-    let transaction = new UpdateListItems_Transaction(
-      listID,
-      itemID,
-      itemToDelete,
-      opcode,
-      AddTodoItem,
-      DeleteTodoItem,
-      index
-    )
-    props.tps.addTransaction(transaction)
-    tpsRedo()
-  }
-
-  const editItem = async (itemID, field, value, prev) => {
-    let flag = 0
-    if (field === 'completed') flag = 1
-    let listID = activeList._id
-    let transaction = new EditItem_Transaction(
-      listID,
-      itemID,
-      field,
-      prev,
-      value,
-      flag,
-      UpdateTodoItemField
-    )
-    props.tps.addTransaction(transaction)
-    tpsRedo()
-  }
-
-  const reorderItem = async (itemID, dir) => {
-    let listID = activeList._id
-    let transaction = new ReorderItems_Transaction(
-      listID,
-      itemID,
-      dir,
-      ReorderTodoItems
-    )
-    props.tps.addTransaction(transaction)
-    tpsRedo()
-  }
-
-  const createNewList = async () => {
-    let list = {
-      _id: '',
-      name: 'Untitled',
-      owner: props.user._id,
-      items: [],
-      sortRule: 'task',
-      sortDirection: 1,
-    }
-    const { data } = await AddTodolist({
-      variables: { todolist: list },
-      refetchQueries: [{ query: GET_DB_TODOS }],
-    })
-    if (data) {
-      loadTodoList(data.addTodolist)
-    }
-  }
-  const deleteList = async (_id) => {
-    DeleteTodolist({
-      variables: { _id: _id },
-      refetchQueries: [{ query: GET_DB_TODOS }],
-    })
-    loadTodoList({})
-  }
-
-  const updateListField = async (_id, field, value, prev) => {
-    let transaction = new UpdateListField_Transaction(
-      _id,
-      field,
-      prev,
-      value,
-      UpdateTodolistField
-    )
-    props.tps.addTransaction(transaction)
-    tpsRedo()
-  }
-
-  const handleSetActive = (_id) => {
-    const selectedList = todolists.find((todo) => todo._id === _id)
-    loadTodoList(selectedList)
-  }
-
   const setShowLogin = () => {
     toggleShowDelete(false)
     toggleShowCreate(false)
@@ -289,47 +167,56 @@ const Homescreen = (props) => {
     console.log('setShowUpdate test2', showUpdate)
   }
 
-  const sort = (criteria) => {
-    let prevSortRule = sortRule
-    setSortRule(criteria)
-    let transaction = new SortItems_Transaction(
-      activeList._id,
-      criteria,
-      prevSortRule,
-      sortTodoItems
-    )
-    console.log(transaction)
-    props.tps.addTransaction(transaction)
-    tpsRedo()
-  }
   const background_color = 'black'
-  console.log(history)
+
   return (
     <WLayout wLayout='header'>
-      <Header
-        tps={props.tps}
-        fetchUser={props.fetchUser}
-        user={props.user}
-        refreshTps={props.refreshTps}
-        history={props.history}
-      />
-      <WMMain>
-        {auth === false ? (
-          <div>
-            <img src={globe} alt='' className='globe-home' />
-            <h1 className='home-page-title'>
-              Welcome to the World Data Mapper
-            </h1>
-          </div>
-        ) : (
-          history.push('/home')
-          // <div className='container-secondary'>
-          //   <h1>Main page</h1>
-          // </div>
-        )}
-      </WMMain>
+      <WLHeader>
+        <WNavbar style={{ backgroundColor: background_color }}>
+          <ul>
+            <WNavItem>
+              <Logo className='logo' />
+            </WNavItem>
+          </ul>
+          <ul>
+            <NavbarOptions
+              fetchUser={props.fetchUser}
+              auth={auth}
+              setShowCreate={setShowCreate}
+              setShowLogin={setShowLogin}
+              setShowUpdate={setShowUpdate}
+              reloadTodos={refetch}
+              setActiveList={loadTodoList}
+              user={props.user}
+            />
+          </ul>
+        </WNavbar>
+      </WLHeader>
+
+      {showCreate && (
+        <CreateAccount
+          fetchUser={props.fetchUser}
+          setShowCreate={setShowCreate}
+        />
+      )}
+
+      {showLogin && (
+        <Login
+          fetchUser={props.fetchUser}
+          reloadTodos={refetch}
+          setShowLogin={setShowLogin}
+        />
+      )}
+
+      {showUpdate && (
+        <UpdateAccount
+          fetchUser={props.fetchUser}
+          user={props.user}
+          setShowUpdate={setShowUpdate}
+        />
+      )}
     </WLayout>
   )
 }
 
-export default Homescreen
+export default Header
