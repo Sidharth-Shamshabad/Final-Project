@@ -22,6 +22,25 @@ const Dashboard = (props) => {
 
   const { loading, error, data, refetch } = useQuery(GET_DB_REGIONS)
   let regions = []
+
+  const refetchRegions = async (refetch) => {
+    // const { loading, error, data } = await refetch()
+    // if (data) {
+    //   regions = data.getAllRegions
+    // props.setActiveRegion((activeRegion) => {
+    //   console.log(activeRegion)
+    //   if (activeRegion._id) {
+    //     let tempID = activeRegion._id
+    //     let region = regions.find((list) => list._id === tempID)
+    //     console.log(region)
+    //     // setActiveList(list)
+    //     return region
+    //   }
+    // })
+    // console.log(data.getAllRegions)
+    // }
+  }
+
   console.log(data)
   if (loading) {
     console.log(loading, 'loading')
@@ -52,7 +71,7 @@ const Dashboard = (props) => {
         props.SidebarData.push({ _id: region._id, name: region.name })
       }
     }
-    refetch()
+    // props.fetchUser()
   }
 
   // const reloadRegion = async () => {
@@ -78,24 +97,6 @@ const Dashboard = (props) => {
 
   const setShowCreate = () => {
     toggleShowCreate(!showCreate)
-  }
-
-  const refetchRegions = async (refetch) => {
-    const { loading, error, data } = await refetch()
-    if (data) {
-      regions = data.getAllRegions
-      props.setActiveRegion((activeRegion) => {
-        console.log(activeRegion)
-        if (activeRegion._id) {
-          let tempID = activeRegion._id
-          let region = regions.find((list) => list._id === tempID)
-          console.log(region)
-          // setActiveList(list)
-          return region
-        }
-      })
-      console.log(data.getAllRegions)
-    }
   }
 
   console.log(props.regions)
@@ -149,7 +150,11 @@ const Dashboard = (props) => {
                 }}
               >
                 {regions.map((region) => (
-                  <DashboardItem region={region} />
+                  <DashboardItem
+                    region={region}
+                    user={props.user}
+                    fetchUser={props.fetchUser}
+                  />
                   // <div
                   //   style={{ display: 'flex', flexDirection: 'horizontal' }}
                   //   region={region}

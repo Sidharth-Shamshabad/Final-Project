@@ -17,9 +17,9 @@ const UpdateAccount = (props) => {
   const name = props.user.name
   const email = props.user.email
   const [input, setInput] = useState({
-    email: '',
+    email: props.user.email,
     password: '',
-    name: '',
+    name: props.user.name,
   })
   const [loading, toggleLoading] = useState(false)
   const [Update] = useMutation(UPDATE)

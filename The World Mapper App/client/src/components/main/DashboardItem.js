@@ -2,13 +2,21 @@ import React, { useState } from 'react'
 import { useHistory } from 'react-router'
 import { WButton, WRow, WCol } from 'wt-frontend'
 import Delete from '../modals/Delete'
+import EditMapName from '../modals/EditMapName'
 
 const DashboardItem = (props) => {
   let history = useHistory()
   const [showDelete, toggleShowDelete] = useState(false)
+  const [showEdit, toggleShowEdit] = useState(false)
 
   const setShowDelete = () => {
+    toggleShowEdit(false)
     toggleShowDelete(!showDelete)
+  }
+
+  const setShowEdit = () => {
+    toggleShowDelete(false)
+    toggleShowEdit(!showEdit)
   }
 
   return (
@@ -34,6 +42,14 @@ const DashboardItem = (props) => {
         wType='texted'
         // className={`${buttonStyle}`}
         clickAnimation={props.disabled ? '' : 'ripple-light'}
+        onClick={() => setShowEdit()}
+      >
+        <i className='material-icons'>edit</i>
+      </WButton>
+      <WButton
+        wType='texted'
+        // className={`${buttonStyle}`}
+        clickAnimation={props.disabled ? '' : 'ripple-light'}
         onClick={() => setShowDelete()}
       >
         <i className='material-icons'>delete_outline</i>
@@ -43,6 +59,14 @@ const DashboardItem = (props) => {
           //   deleteList={deleteList}
           activeid={props.region._id}
           setShowDelete={setShowDelete}
+        />
+      )}
+      {showEdit && (
+        <EditMapName
+          setShowEdit={setShowEdit}
+          fetchUser={props.fetchUser}
+          user={props.user}
+          region={props.region}
         />
       )}
     </div>

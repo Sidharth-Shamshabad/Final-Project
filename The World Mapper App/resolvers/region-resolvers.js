@@ -81,5 +81,15 @@ module.exports = {
       if (deleted) return true
       else return false
     },
+    editMapFile: async (_, args) => {
+      const { field, value, _id } = args
+      const objectId = new ObjectId(_id)
+      const updated = await Region.updateOne(
+        { _id: objectId },
+        { [field]: value }
+      )
+      if (updated) return value
+      else return ''
+    },
   },
 }

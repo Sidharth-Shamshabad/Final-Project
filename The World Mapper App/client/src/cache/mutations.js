@@ -66,6 +66,12 @@ export const DELETE_MAP_FILE = gql`
   }
 `
 
+export const EDIT_MAP_FILE = gql`
+  mutation EditMapFile($_id: String!, $field: String!, $value: String!) {
+    editMapFile(_id: $_id, field: $field, value: $value)
+  }
+`
+
 export const ADD_ITEM = gql`
   mutation AddItem($item: ItemInput!, $_id: String!, $index: Int!) {
     addItem(item: $item, _id: $_id, index: $index)
