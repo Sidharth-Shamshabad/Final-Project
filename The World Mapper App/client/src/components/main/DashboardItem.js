@@ -32,7 +32,7 @@ const DashboardItem = (props) => {
         }}
         onClick={(region) => {
           console.log(region)
-          history.push('/regions')
+          history.push(`/regions/${props.region._id}`)
         }}
         className='list-item'
       >

@@ -174,7 +174,7 @@ const Header = (props) => {
       <WLHeader>
         <WNavbar style={{ backgroundColor: background_color }}>
           <ul>
-            <WNavItem>
+            <WNavItem onClick={() => history.push('/home')} className='pointer'>
               <Logo className='logo' />
             </WNavItem>
           </ul>
@@ -204,6 +204,7 @@ const Header = (props) => {
       {showLogin && (
         <Login
           fetchUser={props.fetchUser}
+          user={props.user}
           // reloadTodos={refetch}
           setShowLogin={setShowLogin}
         />

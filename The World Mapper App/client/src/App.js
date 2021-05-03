@@ -94,7 +94,7 @@ const App = () => {
           )}
         />
         <Route
-          path='/regions:any'
+          path='/regions/:any'
           name='regions'
           render={() => (
             <RegionsSpreadsheet

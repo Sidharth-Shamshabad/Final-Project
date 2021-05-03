@@ -147,6 +147,9 @@ const Dashboard = (props) => {
                   paddingLeft: '2.5%',
                   // paddingTop: '25px',
                   grid: 'fill',
+                  overflow: 'scroll',
+                  overflowX: 'hidden',
+                  scrollbarWidth: 'thin',
                 }}
               >
                 {regions.map((region) => (
