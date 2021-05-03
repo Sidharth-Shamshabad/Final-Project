@@ -41,6 +41,25 @@ export const UPDATE = gql`
   }
 `
 
+export const CREATE_MAP_FILE = gql`
+  mutation CreateMapFile($region: RegionInput!) {
+    createMapFile(region: $region) {
+      _id
+      id
+      name
+      owner
+      parentRegion
+      subregions
+      capital
+      leader
+      flag
+      landmarks
+      sortRule
+      sortDirection
+    }
+  }
+`
+
 export const ADD_ITEM = gql`
   mutation AddItem($item: ItemInput!, $_id: String!, $index: Int!) {
     addItem(item: $item, _id: $_id, index: $index)

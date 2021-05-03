@@ -14,7 +14,7 @@ const LoggedIn = (props) => {
     if (data) {
       let reset = await client.resetStore()
       history.push('/')
-      if (reset) props.setActiveList({})
+      if (reset) props.setActiveRegion({})
     }
   }
 
@@ -85,11 +85,12 @@ const NavbarOptions = (props) => {
           setShowLogin={props.setShowLogin}
           setShowCreate={props.setShowCreate}
           user={props.user}
+          setActiveRegion={props.setActiveRegion}
         />
       ) : (
         <LoggedIn
           fetchUser={props.fetchUser}
-          setActiveList={props.setActiveList}
+          setActiveRegion={props.setActiveRegion}
           setShowUpdate={props.setShowUpdate}
           logout={props.logout}
           user={props.user}

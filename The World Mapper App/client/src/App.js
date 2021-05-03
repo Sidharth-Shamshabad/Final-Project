@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Homescreen from './components/homescreen/Homescreen'
 import { useQuery } from '@apollo/client'
 import * as queries from './cache/queries'
@@ -11,6 +11,16 @@ import {
   useHistory,
 } from 'react-router-dom'
 import Dashboard from './components/main/Dashboard'
+import RegionsSpreadsheet from './components/main/RegionsSpreadsheet'
+
+// const getUserInfo = () => {
+//   const { loading, error, data, refetch } = useQuery(queries.GET_DB_USER)
+//   const userLoading = loading
+//   const userError = error
+//   const userData = data
+//   const userRefetch = refetch
+//   return { userLoading, userError, userData, userRefetch }
+// }
 
 const App = () => {
   let user = null
@@ -34,6 +44,19 @@ const App = () => {
   }
   let history = useHistory()
   console.log(history)
+
+  let regions = []
+  let SidebarData = []
+  const [activeRegion, setActiveRegion] = useState({})
+
+  const reloadRegion = async () => {
+    if (activeRegion._id) {
+      let tempID = activeRegion._id
+      let region = regions.find((region) => region._id === tempID)
+      setActiveRegion(region)
+    }
+  }
+
   return (
     <BrowserRouter history={history}>
       <Switch>
@@ -48,6 +71,7 @@ const App = () => {
               user={user}
               refreshTps={refreshTps}
               history={history}
+              setActiveRegion={setActiveRegion}
             />
           )}
         />
@@ -61,6 +85,29 @@ const App = () => {
               user={user}
               refreshTps={refreshTps}
               history={history}
+              regions={regions}
+              SidebarData={SidebarData}
+              activeRegion={activeRegion}
+              setActiveRegion={setActiveRegion}
+              reloadRegion={reloadRegion}
+            />
+          )}
+        />
+        <Route
+          path='/regions'
+          name='regions'
+          render={() => (
+            <RegionsSpreadsheet
+              tps={transactionStack}
+              fetchUser={refetch}
+              user={user}
+              refreshTps={refreshTps}
+              history={history}
+              regions={regions}
+              SidebarData={SidebarData}
+              activeRegion={activeRegion}
+              setActiveRegion={setActiveRegion}
+              reloadRegion={reloadRegion}
             />
           )}
         />

@@ -35,7 +35,7 @@ const Login = (props) => {
     }
     if (data) {
       props.fetchUser()
-      props.reloadTodos()
+      // props.reloadRegions()
       toggleLoading(false)
       props.setShowLogin(false)
     }
