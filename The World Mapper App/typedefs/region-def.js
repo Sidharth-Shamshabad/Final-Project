@@ -21,6 +21,7 @@ const typeDefs = gql`
   }
   extend type Mutation {
     createMapFile(region: RegionInput!): Region
+    deleteMapFile(_id: String!): Boolean
   }
   input RegionInput {
     _id: String

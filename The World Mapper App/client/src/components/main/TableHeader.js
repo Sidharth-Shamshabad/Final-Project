@@ -51,34 +51,51 @@ const TableHeader = (props) => {
         <h1>Region Name:</h1>
       </div>
 
-      <WRow
-        className='table-header'
-        style={{ height: '10%', backgroundColor: 'red' }}
-      >
+      <WRow className='table-header' style={{ backgroundColor: 'red' }}>
         <WCol size='3'>
-          <WButton className='table-header-section' wType='texted'>
+          <WButton
+            className='table-header-section'
+            wType='texted'
+            style={{ paddingLeft: '2.5%' }}
+          >
             Name
           </WButton>
         </WCol>
 
         <WCol size='2'>
-          <WButton className='table-header-section' wType='texted'>
+          <WButton
+            className='table-header-section'
+            wType='texted'
+            style={{ paddingLeft: '2.5%' }}
+          >
             Capital
           </WButton>
         </WCol>
 
         <WCol size='2'>
-          <WButton className='table-header-section' wType='texted'>
+          <WButton
+            className='table-header-section'
+            wType='texted'
+            style={{ paddingLeft: '2.5%' }}
+          >
             Leader
           </WButton>
         </WCol>
         <WCol size='2'>
-          <WButton className='table-header-section' wType='texted'>
+          <WButton
+            className='table-header-section'
+            wType='texted'
+            style={{ paddingLeft: '2.5%' }}
+          >
             Flag
           </WButton>
         </WCol>
         <WCol size='3'>
-          <WButton className='table-header-section' wType='texted'>
+          <WButton
+            className='table-header-section'
+            wType='texted'
+            style={{ paddingLeft: '2.5%' }}
+          >
             Landmarks
           </WButton>
         </WCol>

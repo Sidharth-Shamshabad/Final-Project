@@ -74,5 +74,12 @@ module.exports = {
         return newRegion
       }
     },
+    deleteMapFile: async (_, args) => {
+      const { _id } = args
+      const objectId = new ObjectId(_id)
+      const deleted = await Region.deleteOne({ _id: objectId })
+      if (deleted) return true
+      else return false
+    },
   },
 }

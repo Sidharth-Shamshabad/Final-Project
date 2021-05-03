@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { CREATE_MAP_FILE } from '../../cache/mutations'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
+import { GET_DB_REGIONS } from '../../cache/queries'
 
 import {
   WModal,
@@ -58,6 +59,7 @@ const CreateNewMap = (props) => {
 
     const { loading, error, data } = await CreateMapFile({
       variables: { region },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
     })
     if (loading) {
       toggleLoading(true)

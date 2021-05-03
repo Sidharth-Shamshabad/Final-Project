@@ -10,6 +10,7 @@ import { GET_DB_REGIONS } from '../../cache/queries'
 import * as mutations from '../../cache/mutations'
 import CreateNewMapFile from '../modals/CreateNewMap'
 import { WButton, WRow, WCol } from 'wt-frontend'
+import DashboardItem from './DashboardItem'
 
 const Dashboard = (props) => {
   const auth = props.user === null ? false : true
@@ -51,6 +52,7 @@ const Dashboard = (props) => {
         props.SidebarData.push({ _id: region._id, name: region.name })
       }
     }
+    refetch()
   }
 
   // const reloadRegion = async () => {
@@ -147,28 +149,34 @@ const Dashboard = (props) => {
                 }}
               >
                 {regions.map((region) => (
-                  <div style={{ display: 'flex', flexDirection: 'horizontal' }}>
-                    <div
-                      style={{
-                        paddingTop: '20px',
-                        fontWeight: 'bolder',
-                        width: '100%',
-                      }}
-                      onClick={() => {
-                        history.push('/regions')
-                      }}
-                      className='list-item'
-                    >
-                      {region.name}
-                    </div>
-                    <WButton
-                      wType='texted'
-                      // className={`${buttonStyle}`}
-                      clickAnimation={props.disabled ? '' : 'ripple-light'}
-                    >
-                      <i className='material-icons'>delete_outline</i>
-                    </WButton>
-                  </div>
+                  <DashboardItem region={region} />
+                  // <div
+                  //   style={{ display: 'flex', flexDirection: 'horizontal' }}
+                  //   region={region}
+                  // >
+                  //   <div
+                  //     style={{
+                  //       paddingTop: '20px',
+                  //       fontWeight: 'bolder',
+                  //       width: '100%',
+                  //     }}
+                  //     onClick={(region) => {
+                  //       console.log(region)
+                  //       history.push('/regions')
+                  //     }}
+                  //     className='list-item'
+                  //   >
+                  //     {region.name}
+                  //   </div>
+                  //   <WButton
+                  //     wType='texted'
+                  //     // className={`${buttonStyle}`}
+                  //     clickAnimation={props.disabled ? '' : 'ripple-light'}
+                  //     onClick={(region) => console.log(region)}
+                  //   >
+                  //     <i className='material-icons'>delete_outline</i>
+                  //   </WButton>
+                  // </div>
                 ))}
               </div>
               <div
