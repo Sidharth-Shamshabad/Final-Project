@@ -157,6 +157,8 @@ const Dashboard = (props) => {
                     region={region}
                     user={props.user}
                     fetchUser={props.fetchUser}
+                    activeRegion={props.activeRegion}
+                    setActiveRegion={props.setActiveRegion}
                   />
                   // <div
                   //   style={{ display: 'flex', flexDirection: 'horizontal' }}

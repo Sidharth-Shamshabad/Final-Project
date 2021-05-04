@@ -48,3 +48,22 @@ export const GET_DB_REGIONS = gql`
     }
   }
 `
+
+export const GET_REGION_BY_ID = gql`
+  query GetRegionById($_id: String!) {
+    getRegionById(_id: $_id) {
+      _id
+      id
+      name
+      owner
+      parentRegion
+      subregions
+      capital
+      leader
+      flag
+      landmarks
+      sortRule
+      sortDirection
+    }
+  }
+`

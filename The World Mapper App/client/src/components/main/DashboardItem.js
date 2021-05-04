@@ -30,8 +30,10 @@ const DashboardItem = (props) => {
           fontWeight: 'bolder',
           width: '100%',
         }}
-        onClick={(region) => {
-          console.log(region)
+        onClick={() => {
+          props.setActiveRegion(props.region)
+          props.fetchUser()
+          console.log('Current Active Region >>>', props.activeRegion)
           history.push(`/regions/${props.region._id}`)
         }}
         className='list-item'

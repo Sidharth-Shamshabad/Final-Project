@@ -91,5 +91,50 @@ module.exports = {
       if (updated) return value
       else return ''
     },
+    addSubregion: async (_, args) => {
+      const { region } = args
+      const objectId = new ObjectId()
+      const {
+        _id,
+        id,
+        name,
+        owner,
+        parentRegion,
+        subregions,
+        capital,
+        leader,
+        flag,
+        landmarks,
+        sortRule,
+        sortDirection,
+      } = region
+
+      const newRegion = new Region({
+        _id: objectId,
+        id: id,
+        name: name,
+        owner: owner,
+        parentRegion: parentRegion,
+        subregions: subregions,
+        capital: capital,
+        leader: leader,
+        flag: flag,
+        landmarks: landmarks,
+        sortRule: sortRule,
+        sortDirection: sortDirection,
+      })
+      const updated = await newRegion.save()
+
+      const parent = await Region.findOne({ _id: parentRegion })
+      let updatedSubregionsList = parent.subregions
+      updatedSubregionsList.push(objectId)
+
+      const parentUpdated = await Region.updateOne(
+        { _id: parentRegion },
+        { subregions: updatedSubregionsList }
+      )
+      if (parentUpdated) return updated
+      else return 'Could not add subregion'
+    },
   },
 }

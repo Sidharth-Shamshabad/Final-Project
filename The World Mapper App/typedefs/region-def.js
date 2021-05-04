@@ -23,6 +23,7 @@ const typeDefs = gql`
     createMapFile(region: RegionInput!): Region
     deleteMapFile(_id: String!): Boolean
     editMapFile(_id: String!, field: String!, value: String!): String
+    addSubregion(region: RegionInput!): Region
   }
   input RegionInput {
     _id: String

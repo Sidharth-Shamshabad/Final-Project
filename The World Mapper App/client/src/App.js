@@ -12,6 +12,7 @@ import {
 } from 'react-router-dom'
 import Dashboard from './components/main/Dashboard'
 import RegionsSpreadsheet from './components/main/RegionsSpreadsheet'
+import RegionViewer from './components/main/RegionViewer'
 
 // const getUserInfo = () => {
 //   const { loading, error, data, refetch } = useQuery(queries.GET_DB_USER)
@@ -98,6 +99,24 @@ const App = () => {
           name='regions'
           render={() => (
             <RegionsSpreadsheet
+              tps={transactionStack}
+              fetchUser={refetch}
+              user={user}
+              refreshTps={refreshTps}
+              history={history}
+              regions={regions}
+              SidebarData={SidebarData}
+              activeRegion={activeRegion}
+              setActiveRegion={setActiveRegion}
+              reloadRegion={reloadRegion}
+            />
+          )}
+        />
+        <Route
+          path='/subregion/:any'
+          name='subregion'
+          render={() => (
+            <RegionViewer
               tps={transactionStack}
               fetchUser={refetch}
               user={user}
