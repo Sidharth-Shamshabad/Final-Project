@@ -5,7 +5,7 @@ import Header from './Header'
 import TableContents from './TableContents'
 import { useHistory, useParams } from 'react-router'
 import { useMutation, useQuery } from '@apollo/client'
-import { GET_REGION_BY_ID } from '../../cache/queries'
+import { GET_REGION_BY_ID, GET_DB_REGIONS } from '../../cache/queries'
 import WMMain from 'wt-frontend/build/components/wmodal/WMMain'
 
 const RegionsSpreadsheet = (props) => {
@@ -15,6 +15,7 @@ const RegionsSpreadsheet = (props) => {
 
   const { loading, error, data } = useQuery(GET_REGION_BY_ID, {
     variables: { _id: regionID },
+    refetchQueries: [{ query: GET_DB_REGIONS }],
   })
 
   if (data) {
@@ -50,7 +51,7 @@ const RegionsSpreadsheet = (props) => {
             history={props.history}
             setActiveRegion={props.setActiveRegion}
           />
-          <WMMain>
+          <WMMain style={{ height: '80%' }}>
             <TableHeader
               activeRegion={props.activeRegion}
               regionName={props.activeRegion.name}
@@ -59,7 +60,10 @@ const RegionsSpreadsheet = (props) => {
               user={props.user}
               style={{ paddingBottom: '0px', marginBottom: '0px' }}
             />
-            <TableContents subregionIds={subregionIds} />
+            <TableContents
+              subregionIds={subregionIds}
+              activeRegion={props.activeRegion}
+            />
           </WMMain>
         </WLayout>
       ) : (

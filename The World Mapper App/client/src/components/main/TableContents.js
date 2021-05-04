@@ -1,8 +1,14 @@
 import React from 'react'
 import TableEntry from './TableEntry'
+import { useMutation, useQuery } from '@apollo/client'
+import { GET_REGION_BY_ID, GET_DB_REGIONS } from '../../cache/queries'
 
 const TableContents = (props) => {
   //   let entries = props.activeList ? props.activeList.items : null
+  const { loading, error, data } = useQuery(GET_REGION_BY_ID, {
+    variables: { _id: props.activeRegion._id },
+    refetchQueries: [{ query: GET_DB_REGIONS }],
+  })
   let entries = props.subregionIds
   let entryCount = 0
   if (entries) {
@@ -30,7 +36,7 @@ const TableContents = (props) => {
     <div className='container-primary'>
       {
         /*props.activeList._id*/ true ? (
-          <h2 className='nothing-msg'> Nothing to do!</h2>
+          <h2 className='nothing-msg'>No Subregions added!</h2>
         ) : (
           <></>
         )

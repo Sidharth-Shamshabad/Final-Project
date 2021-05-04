@@ -6,7 +6,7 @@ import CreateAccount from '../modals/CreateAccount'
 import NavbarOptions from '../navbar/NavbarOptions'
 import * as mutations from '../../cache/mutations'
 import SidebarContents from '../sidebar/SidebarContents'
-import { GET_DB_TODOS } from '../../cache/queries'
+import { GET_DB_TODOS, GET_REGION_BY_ID } from '../../cache/queries'
 import React, { useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { WNavbar, WSidebar, WNavItem } from 'wt-frontend'
@@ -21,7 +21,7 @@ import {
 import globe from './globe.jpeg'
 import WMMain from 'wt-frontend/build/components/wmodal/WMMain'
 import UpdateAccount from '../modals/UpdateAccount'
-import { useHistory } from 'react-router'
+import { useHistory, useParams } from 'react-router'
 
 const Header = (props) => {
   // const keyCombination = (e, callback) => {
@@ -151,13 +151,6 @@ const Header = (props) => {
     toggleShowCreate(!showCreate)
   }
 
-  const setShowDelete = () => {
-    toggleShowCreate(false)
-    toggleShowLogin(false)
-    toggleShowUpdate(false)
-    toggleShowDelete(!showDelete)
-  }
-
   const setShowUpdate = () => {
     console.log('setShowUpdate test', showUpdate)
     toggleShowDelete(false)
@@ -168,6 +161,9 @@ const Header = (props) => {
   }
 
   const background_color = 'black'
+
+  let params = useParams()
+  const regionID = params.any
 
   return (
     <div className='wLheader'>

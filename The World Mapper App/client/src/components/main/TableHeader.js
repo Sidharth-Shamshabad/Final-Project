@@ -96,9 +96,15 @@ const TableHeader = (props) => {
             <i className='material-icons'>redo</i>
           </WButton>
         </div>
-        <h1 style={{ textAlign: 'center' }}>Region Name:</h1>
+        <h1 style={{ textAlign: 'center', color: 'white', paddingLeft: '33%' }}>
+          Region Name:
+        </h1>
         <h1
-          style={{ color: 'lightblue', paddingLeft: '1%', textAlign: 'center' }}
+          style={{
+            color: 'lightblue',
+            paddingLeft: '1%',
+            textAlign: 'center',
+          }}
         >
           {props.regionName}
         </h1>

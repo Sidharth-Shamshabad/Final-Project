@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { LOGIN } from '../../cache/mutations'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
+import { GET_DB_REGIONS } from '../../cache/queries'
 
 import {
   WModal,
@@ -25,7 +26,10 @@ const Login = (props) => {
   }
 
   const handleLogin = async (e) => {
-    const { loading, error, data } = await Login({ variables: { ...input } })
+    const { loading, error, data } = await Login({
+      variables: { ...input },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
+    })
     if (loading) {
       toggleLoading(true)
     }

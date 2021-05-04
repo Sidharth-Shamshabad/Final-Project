@@ -24,6 +24,21 @@ import RegionViewer from './components/main/RegionViewer'
 // }
 
 const App = () => {
+  let history = useHistory()
+  console.log(history)
+
+  let regions = []
+  let SidebarData = []
+  const [activeRegion, setActiveRegion] = useState({})
+
+  const reloadRegion = async () => {
+    if (activeRegion._id) {
+      let tempID = activeRegion._id
+      let region = regions.find((region) => region._id === tempID)
+      setActiveRegion(region)
+    }
+  }
+
   let user = null
   let transactionStack = new jsTPS()
   let refreshTps = false
@@ -41,20 +56,7 @@ const App = () => {
     let { getCurrentUser } = data
     if (getCurrentUser !== null) {
       user = getCurrentUser
-    }
-  }
-  let history = useHistory()
-  console.log(history)
-
-  let regions = []
-  let SidebarData = []
-  const [activeRegion, setActiveRegion] = useState({})
-
-  const reloadRegion = async () => {
-    if (activeRegion._id) {
-      let tempID = activeRegion._id
-      let region = regions.find((region) => region._id === tempID)
-      setActiveRegion(region)
+      // refetch()
     }
   }
 

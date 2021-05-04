@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { WButton, WInput, WRow, WCol } from 'wt-frontend'
 import { useMutation, useQuery } from '@apollo/client'
-import { GET_REGION_BY_ID } from '../../cache/queries'
+import { GET_REGION_BY_ID, GET_DB_REGIONS } from '../../cache/queries'
 import { useHistory } from 'react-router'
 
 const TableEntry = (props) => {
@@ -11,6 +11,7 @@ const TableEntry = (props) => {
 
   const { loading, error, data } = useQuery(GET_REGION_BY_ID, {
     variables: { _id: entry },
+    refetchQueries: [{ query: GET_DB_REGIONS }],
   })
   let subregion = {}
   if (data) {
@@ -81,7 +82,13 @@ const TableEntry = (props) => {
 
   return (
     <WRow className='table-entry' style={{ backgroundColor: 'gray' }}>
-      <WCol size='3'>
+      <WCol
+        size='3'
+        className='pointer'
+        onClick={() => {
+          history.push(`/regions/${subregion._id}`)
+        }}
+      >
         <WButton
           wType='texted'
           className='table-header-button'
@@ -100,6 +107,7 @@ const TableEntry = (props) => {
       <WCol size='2'>{subregion.flag}</WCol>
       <WCol
         size='3'
+        className='pointer'
         onClick={() => {
           history.push(`/subregion/${subregion._id}`)
         }}
