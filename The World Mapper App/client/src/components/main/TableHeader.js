@@ -62,6 +62,7 @@ const TableHeader = (props) => {
     if (data) {
       console.log(data)
       props.fetchUser()
+      props.refetchRegions()
     }
   }
 

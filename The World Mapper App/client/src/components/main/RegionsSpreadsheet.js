@@ -13,7 +13,7 @@ const RegionsSpreadsheet = (props) => {
   let params = useParams()
   const regionID = params.any
 
-  const { loading, error, data } = useQuery(GET_REGION_BY_ID, {
+  const { loading, error, data, refetch } = useQuery(GET_REGION_BY_ID, {
     variables: { _id: regionID },
     refetchQueries: [{ query: GET_DB_REGIONS }],
   })
@@ -59,10 +59,12 @@ const RegionsSpreadsheet = (props) => {
               fetchUser={props.fetchUser}
               user={props.user}
               style={{ paddingBottom: '0px', marginBottom: '0px' }}
+              refetchRegions={refetch}
             />
             <TableContents
               subregionIds={subregionIds}
               activeRegion={props.activeRegion}
+              setActiveRegion={props.setActiveRegion}
             />
           </WMMain>
         </WLayout>

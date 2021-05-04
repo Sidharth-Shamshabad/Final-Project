@@ -26,6 +26,7 @@ const TableContents = (props) => {
           key={entry}
           index={index}
           entryCount={entryCount}
+          setActiveRegion={props.setActiveRegion}
           //   deleteItem={props.deleteItem}
           //   reorderItem={props.reorderItem}
           //   editItem={props.editItem}
