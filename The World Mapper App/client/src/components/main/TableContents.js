@@ -29,7 +29,7 @@ const TableContents = (props) => {
           setActiveRegion={props.setActiveRegion}
           //   deleteItem={props.deleteItem}
           //   reorderItem={props.reorderItem}
-          //   editItem={props.editItem}
+          editSubregion={props.editSubregion}
         />
       ))}
     </div>

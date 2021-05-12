@@ -17,92 +17,159 @@ const TableEntry = (props) => {
   if (data) {
     subregion = data.getRegionById
   }
-  console.log(subregion)
 
-  // console.log(subregion)
+  const name = subregion.name
+  const capital = subregion.capital
+  const leader = subregion.leader
 
-  // const completeStyle = data.completed ? ' complete-task' : ' incomplete-task'
-  // const assignedToStyle = data.completed
-  //   ? 'complete-task-assignedTo'
-  //   : 'incomplete-task-assignedTo'
-
-  // const description = data.description
-  // const due_date = data.due_date
-  // const status = data.completed ? 'complete' : 'incomplete'
-  // const assigned_to = data.assigned_to
-
-  // const canMoveUp = props.index > 0 ? true : false
-  // const canMoveDown = props.index < props.entryCount - 1 ? true : false
-
-  // const [editingDate, toggleDateEdit] = useState(false)
-  // const [editingDescr, toggleDescrEdit] = useState(false)
-  // const [editingStatus, toggleStatusEdit] = useState(false)
-  // const [editingAssigned, toggleAssignEdit] = useState(false)
+  const [editingName, toggleNameEdit] = useState(false)
+  const [editingCapital, toggleCapitalEdit] = useState(false)
+  const [editingLeader, toggleLeaderEdit] = useState(false)
 
   // const disabledButton = () => {}
 
-  // const handleDateEdit = (e) => {
-  //   toggleDateEdit(false)
-  //   const newDate = e.target.value ? e.target.value : 'No Date'
-  //   const prevDate = due_date
-  //   if (newDate !== prevDate) {
-  //     //   props.editItem(data._id, 'due_date', newDate, prevDate);
-  //   }
-  // }
+  const handleGoToSubregion = (e) => {}
 
-  // const handleDescrEdit = (e) => {
-  //   toggleDescrEdit(false)
-  //   const newDescr = e.target.value ? e.target.value : 'No Description'
-  //   const prevDescr = description
-  //   if (newDescr !== prevDescr) {
-  //     //   props.editItem(data._id, 'description', newDescr, prevDescr);
-  //   }
-  // }
+  const handleNameEdit = (e) => {
+    e.stopPropagation()
+    toggleNameEdit(false)
+    const newName = e.target.value ? e.target.value : 'Untitled'
+    const prevName = name
+    if (newName !== prevName) {
+      props.editSubregion(subregion._id, 'name', newName, prevName)
+    }
+  }
 
-  // const handleStatusEdit = (e) => {
-  //   toggleStatusEdit(false)
-  //   const newStatus = e.target.value ? e.target.value : false
-  //   const prevStatus = status
-  //   if (newStatus !== prevStatus) {
-  //     //   props.editItem(data._id, 'completed', newStatus, prevStatus);
-  //   }
-  // }
+  const handleCapitalEdit = (e) => {
+    e.stopPropagation()
+    toggleCapitalEdit(false)
+    const newCapital = e.target.value ? e.target.value : 'Untitled'
+    const prevCapital = capital
+    if (newCapital !== prevCapital) {
+      props.editSubregion(subregion._id, 'capital', newCapital, prevCapital)
+    }
+  }
 
-  // const handleAssignEdit = (e) => {
-  //   toggleAssignEdit(false)
-  //   const newAssigned = e.target.value ? e.target.value : 'Myself'
-  //   const prevAssigned = assigned_to
-  //   if (newAssigned !== prevAssigned) {
-  //     //   props.editItem(data._id, 'assigned_to', newAssigned, prevAssigned);
-  //   }
-  // }
+  const handleLeaderEdit = (e) => {
+    e.stopPropagation()
+    toggleLeaderEdit(false)
+    const newLeader = e.target.value ? e.target.value : 'Untitled'
+    const prevLeader = leader
+    if (newLeader !== prevLeader) {
+      props.editSubregion(subregion._id, 'leader', newLeader, prevLeader)
+    }
+  }
 
-  // console.log('table entry data', data)
   let history = useHistory()
 
   return (
-    <WRow className='table-entry' style={{ backgroundColor: 'gray' }}>
-      <WCol
-        size='3'
-        className='pointer'
-        onClick={() => {
-          history.push(`/regions/${subregion._id}`)
-        }}
-      >
-        <WButton
-          wType='texted'
-          className='table-header-button'
-          clickAnimation={props.disabled ? '' : 'ripple-light'}
-          style={{ color: 'black', marginLeft: '0px' }}
-        >
-          <i className='material-icons'>delete_outline</i>
-        </WButton>
-        {subregion.name}
+    <WRow
+      className='table-entry'
+      style={{ backgroundColor: 'gray', alignItems: 'center' }}
+    >
+      <WCol size='3' className='pointer'>
+        {editingName || name === '' ? (
+          <WInput
+            className='table-input'
+            onBlur={handleNameEdit}
+            onKeyDown={(e) => {
+              if (e.keyCode === 13) handleNameEdit(e)
+            }}
+            autoFocus={true}
+            defaultValue={name}
+            type='text'
+            inputClass='table-input-class'
+          />
+        ) : (
+          <div
+            style={{ display: 'flex', height: '100%', alignItems: 'center' }}
+          >
+            <WButton
+              wType='texted'
+              className='table-header-button'
+              clickAnimation={props.disabled ? '' : 'ripple-light'}
+              style={{ color: 'black', marginLeft: '0px' }}
+            >
+              <i className='material-icons'>delete_outline</i>
+            </WButton>
+            <div
+              style={{ height: '100%', width: '100%', alignItems: 'center' }}
+              onClick={() => {
+                toggleNameEdit(!editingName)
+              }}
+              onDoubleClick={() => {
+                history.push(`/regions/${subregion._id}`)
+              }}
+            >
+              {subregion.name}
+            </div>
+          </div>
+        )}
       </WCol>
 
-      <WCol size='2'>{subregion.capital}</WCol>
+      <WCol size='2' className='pointer'>
+        {editingCapital || capital === '' ? (
+          <WInput
+            className='table-input'
+            onBlur={handleCapitalEdit}
+            onKeyDown={(e) => {
+              if (e.keyCode === 13) handleCapitalEdit(e)
+            }}
+            autoFocus={true}
+            defaultValue={capital}
+            type='text'
+            inputClass='table-input-class'
+          />
+        ) : (
+          <div
+            style={{ display: 'flex', height: '100%', alignItems: 'center' }}
+          >
+            <div
+              style={{ height: '100%', width: '100%' }}
+              onClick={() => {
+                toggleCapitalEdit(!editingCapital)
+              }}
+              onDoubleClick={() => {
+                history.push(`/regions/${subregion._id}`)
+              }}
+            >
+              {subregion.capital}
+            </div>
+          </div>
+        )}
+      </WCol>
 
-      <WCol size='2'>{subregion.leader}</WCol>
+      <WCol size='2' className='pointer'>
+        {editingLeader || leader === '' ? (
+          <WInput
+            className='table-input'
+            onBlur={handleLeaderEdit}
+            onKeyDown={(e) => {
+              if (e.keyCode === 13) handleLeaderEdit(e)
+            }}
+            autoFocus={true}
+            defaultValue={leader}
+            type='text'
+            inputClass='table-input-class'
+          />
+        ) : (
+          <div
+            style={{ display: 'flex', height: '100%', alignItems: 'center' }}
+          >
+            <div
+              style={{ height: '100%', width: '100%' }}
+              onClick={() => {
+                toggleLeaderEdit(!editingLeader)
+              }}
+              onDoubleClick={() => {
+                history.push(`/regions/${subregion._id}`)
+              }}
+            >
+              {subregion.leader}
+            </div>
+          </div>
+        )}
+      </WCol>
 
       <WCol size='2'>{subregion.flag}</WCol>
       <WCol

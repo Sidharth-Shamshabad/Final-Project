@@ -1,5 +1,5 @@
 import TableHeader from './TableHeader'
-import React from 'react'
+import React, { useState } from 'react'
 import { WLayout, WRow, WCol, WButton } from 'wt-frontend'
 import Header from './Header'
 import TableContents from './TableContents'
@@ -7,6 +7,8 @@ import { useHistory, useParams } from 'react-router'
 import { useMutation, useQuery } from '@apollo/client'
 import { GET_REGION_BY_ID, GET_DB_REGIONS } from '../../cache/queries'
 import WMMain from 'wt-frontend/build/components/wmodal/WMMain'
+import { EditRegion_Transaction } from '../../utils/jsTPS'
+import * as mutations from '../../cache/mutations'
 
 const RegionsSpreadsheet = (props) => {
   const auth = props.user === null ? false : true
@@ -24,6 +26,40 @@ const RegionsSpreadsheet = (props) => {
     console.log(props.activeRegion)
   }
 
+  const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo())
+  const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo())
+
+  const keyCombination = (e, callback) => {
+    if (e.key === 'z' && e.ctrlKey) {
+      if (props.tps.hasTransactionToUndo()) {
+        tpsUndo()
+      }
+    } else if (e.key === 'y' && e.ctrlKey) {
+      if (props.tps.hasTransactionToRedo()) {
+        tpsRedo()
+      }
+    }
+  }
+  document.onkeydown = keyCombination
+
+  const tpsUndo = async () => {
+    const ret = await props.tps.undoTransaction()
+    if (ret) {
+      setCanUndo(props.tps.hasTransactionToUndo())
+      setCanRedo(props.tps.hasTransactionToRedo())
+    }
+  }
+
+  const tpsRedo = async () => {
+    const ret = await props.tps.doTransaction()
+    if (ret) {
+      setCanUndo(props.tps.hasTransactionToUndo())
+      setCanRedo(props.tps.hasTransactionToRedo())
+    }
+  }
+
+  const [UpdateSubregionField] = useMutation(mutations.UPDATE_SUBREGION_FIELD)
+
   // let subregions = []
   let subregionIds = props.activeRegion.subregions
   console.log(subregionIds)
@@ -38,6 +74,23 @@ const RegionsSpreadsheet = (props) => {
   //   }
   // }
   let history = useHistory()
+
+  const editSubregion = async (_id, field, value, prev) => {
+    // let flag = 0
+    // if (field === 'completed') flag = 1
+    // let listID = activeList._id
+    console.log(_id, field, value, prev)
+    let transaction = new EditRegion_Transaction(
+      // listID,
+      _id,
+      field,
+      prev,
+      value,
+      UpdateSubregionField
+    )
+    props.tps.addTransaction(transaction)
+    tpsRedo()
+  }
 
   return (
     <div>
@@ -60,11 +113,16 @@ const RegionsSpreadsheet = (props) => {
               user={props.user}
               style={{ paddingBottom: '0px', marginBottom: '0px' }}
               refetchRegions={refetch}
+              undo={tpsUndo}
+              redo={tpsRedo}
+              canUndo={canUndo}
+              canRedo={canRedo}
             />
             <TableContents
               subregionIds={subregionIds}
               activeRegion={props.activeRegion}
               setActiveRegion={props.setActiveRegion}
+              editSubregion={editSubregion}
             />
           </WMMain>
         </WLayout>

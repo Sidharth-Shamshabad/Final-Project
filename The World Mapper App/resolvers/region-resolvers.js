@@ -16,7 +16,6 @@ module.exports = {
       const regions = await Region.find({ owner: _id }).sort({
         updatedAt: 'descending',
       })
-      console.log(regions)
       const parentRegions = regions.filter(
         (region) => region.parentRegion === 'none'
       )
@@ -70,7 +69,6 @@ module.exports = {
       })
       const updated = await newRegion.save()
       if (updated) {
-        console.log(newRegion)
         return newRegion
       }
     },
@@ -135,6 +133,19 @@ module.exports = {
       )
       if (parentUpdated) return updated
       else return 'Could not add subregion'
+    },
+    updateSubregionField: async (_, args) => {
+      const { _id, field } = args
+      let { value } = args
+      const id = new ObjectId(_id)
+      const found = await Region.findOne({ _id: id })
+      let updatedRegion = found
+      updatedRegion[field] = value
+      console.log('initial value', found)
+      const updated = await Region.updateOne({ _id: id }, { [field]: value })
+      console.log('updated value', updatedRegion)
+      if (updated) return updatedRegion
+      else return found
     },
   },
 }

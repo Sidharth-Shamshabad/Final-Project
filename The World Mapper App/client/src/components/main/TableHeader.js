@@ -6,26 +6,30 @@ import { useMutation, useQuery } from '@apollo/client'
 import { GET_DB_REGIONS } from '../../cache/queries'
 
 const TableHeader = (props) => {
-  // const clickDisabled = () => { };
+  const clickDisabled = () => {}
   const buttonStyle = props.disabled
     ? ' table-header-button-disabled '
     : 'table-header-button '
 
-  // const undoOptions = {
-  //     className: props.disabled || !props.canUndo ? ' table-header-button-disabled ' : 'table-header-button',
-  //     onClick: props.disabled || !props.canUndo  ? clickDisabled : props.undo,
-  //     wType: "texted",
-  //     clickAnimation: props.disabled || !props.canUndo ? "" : "ripple-light",
-  //     shape: "rounded"
-  // }
+  const undoOptions = {
+    className: !props.canUndo
+      ? ' table-header-button-disabled '
+      : 'table-header-button',
+    onClick: !props.canUndo ? clickDisabled : props.undo,
+    wType: 'texted',
+    clickAnimation: !props.canUndo ? '' : 'ripple-light',
+    shape: 'rounded',
+  }
 
-  // const redoOptions = {
-  //     className: props.disabled || !props.canRedo ? ' table-header-button-disabled ' : 'table-header-button ',
-  //     onClick: props.disabled || !props.canRedo   ? clickDisabled : props.redo,
-  //     wType: "texted",
-  //     clickAnimation: props.disabled || !props.canRedo ? "" : "ripple-light" ,
-  //     shape: "rounded"
-  // }
+  const redoOptions = {
+    className: !props.canRedo
+      ? ' table-header-button-disabled '
+      : 'table-header-button ',
+    onClick: !props.canRedo ? clickDisabled : props.redo,
+    wType: 'texted',
+    clickAnimation: !props.canRedo ? '' : 'ripple-light',
+    shape: 'rounded',
+  }
   const [AddSubregion] = useMutation(ADD_SUBREGION)
 
   const handleAddSubregion = async (e) => {
@@ -90,10 +94,10 @@ const TableHeader = (props) => {
               add_box
             </i>
           </WButton>
-          <WButton style={{ padding: '0px' }}>
+          <WButton {...undoOptions} style={{ padding: '0px' }}>
             <i className='material-icons'>undo</i>
           </WButton>
-          <WButton style={{ padding: '0px' }}>
+          <WButton {...redoOptions} style={{ padding: '0px' }}>
             <i className='material-icons'>redo</i>
           </WButton>
         </div>
