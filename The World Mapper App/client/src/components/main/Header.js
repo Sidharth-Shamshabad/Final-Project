@@ -9,7 +9,7 @@ import SidebarContents from '../sidebar/SidebarContents'
 import { GET_DB_TODOS, GET_REGION_BY_ID } from '../../cache/queries'
 import React, { useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
-import { WNavbar, WSidebar, WNavItem } from 'wt-frontend'
+import { WButton, WNavbar, WSidebar, WNavItem } from 'wt-frontend'
 import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend'
 import {
   UpdateListField_Transaction,
@@ -65,12 +65,10 @@ const Header = (props) => {
   }
 
   const setShowUpdate = () => {
-    console.log('setShowUpdate test', showUpdate)
     toggleShowDelete(false)
     toggleShowCreate(false)
     toggleShowLogin(false)
     toggleShowUpdate(!showUpdate)
-    console.log('setShowUpdate test2', showUpdate)
   }
 
   const background_color = 'black'
@@ -78,36 +76,54 @@ const Header = (props) => {
   let params = useParams()
   // const regionID = params.any
 
-  console.log(!!props.leftSibling)
-  console.log(!!props.rightSibling)
-  console.log(props.leftSibling)
+  let parentRegionInfo = {}
+  let parentRegionId = ''
+  const siblings = []
+
+  if (props.activeRegion) {
+    parentRegionId = props.activeRegion.parentRegion
+  }
+  const parentRegion = useQuery(GET_REGION_BY_ID, {
+    variables: { _id: parentRegionId },
+  })
+
+  if (parentRegion.data) {
+    const currentActiveRegion = parentRegion.data.getRegionById
+    parentRegionInfo = currentActiveRegion
+    for (let i = 0; i < parentRegionInfo.subregions.length; i++) {
+      const element = parentRegionInfo.subregions[i]
+      siblings.push(element)
+    }
+  }
+
+  let leftSibling = ''
+  let rightSibling = ''
+
+  for (let i = 0; i < siblings.length; i++) {
+    const element = siblings[i]
+    if (element == props.activeRegion._id) {
+      leftSibling = siblings[i - 1]
+      rightSibling = siblings[i + 1]
+    }
+  }
 
   const clickDisabled = () => {}
-  const buttonStyle = props.disabled
-    ? ' table-header-button-disabled '
-    : 'table-header-button '
 
   const leftSiblingOptions = {
-    className: !props.leftSibling
+    className: !leftSibling
       ? ' table-header-button-disabled '
       : 'table-header-button',
-    onClick: !props.leftSibling
-      ? clickDisabled
-      : history.push(`/subregion/${props.leftSibling}`),
     wType: 'texted',
-    clickAnimation: !props.leftSibling ? '' : 'ripple-light',
+    clickAnimation: !leftSibling ? '' : 'ripple-light',
     shape: 'rounded',
   }
 
   const rightSiblingOptions = {
-    className: !props.rightSibling
+    className: !rightSibling
       ? ' table-header-button-disabled '
       : 'table-header-button ',
-    // onClick: !props.rightSibling
-    //   ? clickDisabled
-    //   : history.push(`/subregion/${props.leftSibling}`),
     wType: 'texted',
-    clickAnimation: !props.rightSibling ? '' : 'ripple-light',
+    clickAnimation: !rightSibling ? '' : 'ripple-light',
     shape: 'rounded',
   }
 
@@ -120,6 +136,32 @@ const Header = (props) => {
               <Logo className='logo' />
             </WNavItem>
           </ul>
+          <WButton
+            {...leftSiblingOptions}
+            onClick={() => {
+              if (!leftSibling) {
+                clickDisabled()
+              } else {
+                history.push(`/subregion/${leftSibling}`)
+              }
+            }}
+            style={{ padding: '0px' }}
+          >
+            <i className='material-icons'>undo</i>
+          </WButton>
+          <WButton
+            {...rightSiblingOptions}
+            onClick={() => {
+              if (!rightSibling) {
+                clickDisabled()
+              } else {
+                history.push(`/subregion/${rightSibling}`)
+              }
+            }}
+            style={{ padding: '0px' }}
+          >
+            <i className='material-icons'>redo</i>
+          </WButton>
           <ul>
             <NavbarOptions
               fetchUser={props.fetchUser}

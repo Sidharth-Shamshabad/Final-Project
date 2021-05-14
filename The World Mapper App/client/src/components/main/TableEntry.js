@@ -76,8 +76,6 @@ const TableEntry = (props) => {
 
   let history = useHistory()
 
-  console.log('entry', entry)
-
   return (
     <WRow
       className='table-entry'
