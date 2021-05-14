@@ -19,7 +19,6 @@ const LoggedIn = (props) => {
   }
 
   //   const dataInfo = getUsername()
-  console.log('This is data from NavbarOptions', props)
 
   return (
     <>

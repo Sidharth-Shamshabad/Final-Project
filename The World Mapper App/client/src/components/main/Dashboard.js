@@ -52,7 +52,6 @@ const Dashboard = (props) => {
     // Assign todolists
     regions = []
     for (let region of data.getAllRegions) {
-      console.log(data.getAllRegions)
       if (region.parentRegion === 'none') {
         regions.push(region)
       }
@@ -98,9 +97,6 @@ const Dashboard = (props) => {
   const setShowCreate = () => {
     toggleShowCreate(!showCreate)
   }
-
-  console.log(props.regions)
-  console.log(props.regions)
 
   return (
     <WLayout wLayout='header-lside-rside'>

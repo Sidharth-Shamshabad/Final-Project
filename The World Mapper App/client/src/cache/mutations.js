@@ -73,8 +73,8 @@ export const EDIT_MAP_FILE = gql`
 `
 
 export const ADD_SUBREGION = gql`
-  mutation AddSubregion($region: RegionInput!) {
-    addSubregion(region: $region) {
+  mutation AddSubregion($region: RegionInput!, $index: Int!) {
+    addSubregion(region: $region, index: $index) {
       _id
       id
       name
@@ -98,6 +98,44 @@ export const UPDATE_SUBREGION_FIELD = gql`
     $value: String!
   ) {
     updateSubregionField(_id: $_id, field: $field, value: $value) {
+      _id
+      id
+      name
+      owner
+      parentRegion
+      subregions
+      capital
+      leader
+      flag
+      landmarks
+      sortRule
+      sortDirection
+    }
+  }
+`
+
+export const REMOVE_SUBREGION = gql`
+  mutation removeSubregion($parentId: String!, $subregionId: String!) {
+    removeSubregion(parentId: $parentId, subregionId: $subregionId) {
+      _id
+      id
+      name
+      owner
+      parentRegion
+      subregions
+      capital
+      leader
+      flag
+      landmarks
+      sortRule
+      sortDirection
+    }
+  }
+`
+
+export const READD_SUBREGION = gql`
+  mutation readdSubregion($_id: String!, $field: String!, $value: [String]) {
+    readdSubregion(_id: $_id, field: $field, value: $value) {
       _id
       id
       name

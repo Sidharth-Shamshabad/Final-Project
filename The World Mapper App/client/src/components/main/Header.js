@@ -48,94 +48,7 @@ const Header = (props) => {
   const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo())
   const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo())
 
-  // const { loading, error, data, refetch } = useQuery(GET_DB_TODOS)
-
-  // if (loading) {
-  //   console.log(loading, 'loading')
-  // }
-  // if (error) {
-  //   console.log(error, 'error')
-  // }
-  // if (data) {
-  //   // Assign todolists
-  //   for (let todo of data.getAllTodos) {
-  //     todolists.push(todo)
-  //   }
-  //   // if a list is selected, shift it to front of todolists
-  //   if (activeList._id) {
-  //     let selectedListIndex = todolists.findIndex(
-  //       (entry) => entry._id === activeList._id
-  //     )
-  //     let removed = todolists.splice(selectedListIndex, 1)
-  //     todolists.unshift(removed[0])
-  //   }
-  //   // create data for sidebar links
-  //   for (let todo of todolists) {
-  //     if (todo) {
-  //       SidebarData.push({ _id: todo._id, name: todo.name })
-  //     }
-  //   }
-  // }
   let history = useHistory()
-  // function pushToHome() {
-  //   history.push('/home')
-  // }
-
-  // // NOTE: might not need to be async
-  // const reloadList = async () => {
-  //   if (activeList._id) {
-  //     let tempID = activeList._id
-  //     let list = todolists.find((list) => list._id === tempID)
-  //     setActiveList(list)
-  //   }
-  // }
-
-  // const loadTodoList = (list) => {
-  //   props.tps.clearAllTransactions()
-  //   setCanUndo(props.tps.hasTransactionToUndo())
-  //   setCanRedo(props.tps.hasTransactionToRedo())
-  //   setActiveList(list)
-  // }
-
-  // const mutationOptions = {
-  //   refetchQueries: [{ query: GET_DB_TODOS }],
-  //   awaitRefetchQueries: true,
-  //   onCompleted: () => reloadList(),
-  // }
-
-  // const [ReorderTodoItems] = useMutation(
-  //   mutations.REORDER_ITEMS,
-  //   mutationOptions
-  // )
-  // const [sortTodoItems] = useMutation(mutations.SORT_ITEMS, mutationOptions)
-  // const [UpdateTodoItemField] = useMutation(
-  //   mutations.UPDATE_ITEM_FIELD,
-  //   mutationOptions
-  // )
-  // const [UpdateTodolistField] = useMutation(
-  //   mutations.UPDATE_TODOLIST_FIELD,
-  //   mutationOptions
-  // )
-  // const [DeleteTodoItem] = useMutation(mutations.DELETE_ITEM, mutationOptions)
-  // const [AddTodoItem] = useMutation(mutations.ADD_ITEM, mutationOptions)
-  // const [AddTodolist] = useMutation(mutations.ADD_TODOLIST)
-  // const [DeleteTodolist] = useMutation(mutations.DELETE_TODOLIST)
-
-  // const tpsUndo = async () => {
-  //   const ret = await props.tps.undoTransaction()
-  //   if (ret) {
-  //     setCanUndo(props.tps.hasTransactionToUndo())
-  //     setCanRedo(props.tps.hasTransactionToRedo())
-  //   }
-  // }
-
-  // const tpsRedo = async () => {
-  //   const ret = await props.tps.doTransaction()
-  //   if (ret) {
-  //     setCanUndo(props.tps.hasTransactionToUndo())
-  //     setCanRedo(props.tps.hasTransactionToRedo())
-  //   }
-  // }
 
   const setShowLogin = () => {
     toggleShowDelete(false)
@@ -163,7 +76,40 @@ const Header = (props) => {
   const background_color = 'black'
 
   let params = useParams()
-  const regionID = params.any
+  // const regionID = params.any
+
+  console.log(!!props.leftSibling)
+  console.log(!!props.rightSibling)
+  console.log(props.leftSibling)
+
+  const clickDisabled = () => {}
+  const buttonStyle = props.disabled
+    ? ' table-header-button-disabled '
+    : 'table-header-button '
+
+  const leftSiblingOptions = {
+    className: !props.leftSibling
+      ? ' table-header-button-disabled '
+      : 'table-header-button',
+    onClick: !props.leftSibling
+      ? clickDisabled
+      : history.push(`/subregion/${props.leftSibling}`),
+    wType: 'texted',
+    clickAnimation: !props.leftSibling ? '' : 'ripple-light',
+    shape: 'rounded',
+  }
+
+  const rightSiblingOptions = {
+    className: !props.rightSibling
+      ? ' table-header-button-disabled '
+      : 'table-header-button ',
+    // onClick: !props.rightSibling
+    //   ? clickDisabled
+    //   : history.push(`/subregion/${props.leftSibling}`),
+    wType: 'texted',
+    clickAnimation: !props.rightSibling ? '' : 'ripple-light',
+    shape: 'rounded',
+  }
 
   return (
     <div className='wLheader'>

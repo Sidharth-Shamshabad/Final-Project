@@ -45,6 +45,9 @@ const App = () => {
   const { loading, error, data, refetch } = useQuery(queries.GET_DB_USER)
   console.log('USER DATA', data)
 
+  const [leftSibling, setLeftSibling] = useState('')
+  const [rightSibling, setRightSibling] = useState('')
+
   if (error) {
     console.log(error)
   }
@@ -116,6 +119,7 @@ const App = () => {
         />
         <Route
           path='/subregion/:any'
+          exact={true}
           name='subregion'
           render={() => (
             <RegionViewer

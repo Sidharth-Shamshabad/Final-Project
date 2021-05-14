@@ -4,6 +4,8 @@ import { WButton, WRow, WCol } from 'wt-frontend'
 import { ADD_SUBREGION } from '../../cache/mutations'
 import { useMutation, useQuery } from '@apollo/client'
 import { GET_DB_REGIONS } from '../../cache/queries'
+import * as mutations from '../../cache/mutations'
+import { UpdateRegions_Transaction } from '../../utils/jsTPS'
 
 const TableHeader = (props) => {
   const clickDisabled = () => {}
@@ -12,25 +14,26 @@ const TableHeader = (props) => {
     : 'table-header-button '
 
   const undoOptions = {
-    className: !props.canUndo
+    className: !props.hasUndo
       ? ' table-header-button-disabled '
       : 'table-header-button',
-    onClick: !props.canUndo ? clickDisabled : props.undo,
+    onClick: !props.hasUndo ? clickDisabled : props.undo,
     wType: 'texted',
-    clickAnimation: !props.canUndo ? '' : 'ripple-light',
+    clickAnimation: !props.hasUndo ? '' : 'ripple-light',
     shape: 'rounded',
   }
 
   const redoOptions = {
-    className: !props.canRedo
+    className: !props.hasRedo
       ? ' table-header-button-disabled '
       : 'table-header-button ',
-    onClick: !props.canRedo ? clickDisabled : props.redo,
+    onClick: !props.hasRedo ? clickDisabled : props.redo,
     wType: 'texted',
-    clickAnimation: !props.canRedo ? '' : 'ripple-light',
+    clickAnimation: !props.hasRedo ? '' : 'ripple-light',
     shape: 'rounded',
   }
   const [AddSubregion] = useMutation(ADD_SUBREGION)
+  const [RemoveSubregion] = useMutation(mutations.REMOVE_SUBREGION)
 
   const handleAddSubregion = async (e) => {
     const length = props.activeRegion.length
@@ -53,21 +56,34 @@ const TableHeader = (props) => {
       sortRule: 'name',
       sortDirection: 1,
     }
-
-    const { loading, error, data } = await AddSubregion({
-      variables: { region },
-      refetchQueries: [{ query: GET_DB_REGIONS }],
-    })
-    if (loading) {
-    }
-    if (error) {
-      return `Error: ${error.message}`
-    }
-    if (data) {
-      console.log(data)
-      props.fetchUser()
-      props.refetchRegions()
-    }
+    let opcode = 1
+    let transaction = new UpdateRegions_Transaction(
+      props.parentRegionId,
+      '',
+      region,
+      opcode,
+      AddSubregion,
+      RemoveSubregion
+    )
+    props.tps.addTransaction(transaction)
+    props.redo()
+    props.fetchUser()
+    props.refetchRegions()
+    console.log(props.tps)
+    // const { loading, error, data } = await AddSubregion({
+    //   variables: { region },
+    //   refetchQueries: [{ query: GET_DB_REGIONS }],
+    // })
+    // if (loading) {
+    // }
+    // if (error) {
+    //   return `Error: ${error.message}`
+    // }
+    // if (data) {
+    //   console.log(data)
+    // props.fetchUser()
+    // props.refetchRegions()
+    // }
   }
 
   return (
@@ -126,7 +142,7 @@ const TableHeader = (props) => {
           <WButton
             className='table-header-section'
             wType='texted'
-            // style={{ paddingLeft: '2.5%' }}
+            style={{ paddingLeft: '8%' }}
           >
             Name
           </WButton>

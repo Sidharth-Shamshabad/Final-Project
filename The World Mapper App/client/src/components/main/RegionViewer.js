@@ -13,6 +13,7 @@ const RegionViewer = (props) => {
   let params = useParams()
   let history = useHistory()
   const regionID = params.any
+  console.log(regionID)
 
   const currentRegion = useQuery(GET_REGION_BY_ID, {
     variables: { _id: regionID },
@@ -21,7 +22,7 @@ const RegionViewer = (props) => {
   if (currentRegion.data) {
     const currentActiveRegion = currentRegion.data.getRegionById
     props.setActiveRegion(currentActiveRegion)
-    console.log(props.activeRegion)
+    // console.log(props.activeRegion)
   }
 
   const parentRegionId = props.activeRegion.parentRegion
@@ -35,8 +36,54 @@ const RegionViewer = (props) => {
   if (parentRegion.data) {
     const currentActiveRegion = parentRegion.data.getRegionById
     parentRegionInfo = currentActiveRegion
-    console.log(parentRegionInfo.name)
+    // console.log(parentRegionInfo.name)
   }
+
+  let leftSibling = ''
+  let rightSibling = ''
+
+  // console.log(props.activeRegion.parentRegion)
+  const grandParentRegion = useQuery(GET_REGION_BY_ID, {
+    variables: { _id: props.activeRegion.parentRegion },
+  })
+
+  let grandParentRegionInfo = {}
+  const siblings = []
+  if (grandParentRegion.data) {
+    grandParentRegionInfo = grandParentRegion.data.getRegionById
+    for (let i = 0; i < grandParentRegionInfo.subregions.length; i++) {
+      const element = grandParentRegionInfo.subregions[i]
+      siblings.push(element)
+    }
+    // grandParentRegionInfo = currentActiveRegion
+    // console.log(parentRegionInfo.name)
+  }
+
+  // console.log(siblings)
+
+  // console.log(grandParentRegion.data.getRegionById)
+  // const siblings = grandParentRegionInfo.subregions
+  // console.log(siblings)
+  let leftIndex = -1
+  let rightIndex = -1
+  for (let i = 0; i < siblings.length; i++) {
+    // const previousElement = siblings[i - 1]
+    // const previousElement = siblings[i - 1] ? siblings[i - 1] : ''
+    // console.log(previousElement)
+    // const nextElement = siblings[i + 1] ? siblings[i + 1] : ''
+    const element = siblings[i]
+    // console.log(element, regionID, i)
+    if (element == regionID) {
+      // props.setLeftSibling(siblings[i - 1])
+      // props.setRightSibling(siblings[i + 1])
+      leftSibling = siblings[i - 1]
+      // console.log(i)
+      rightSibling = siblings[i + 1]
+    }
+  }
+
+  console.log(leftSibling)
+  console.log(rightSibling)
 
   return (
     <div>
@@ -48,6 +95,7 @@ const RegionViewer = (props) => {
             user={props.user}
             refreshTps={props.refreshTps}
             history={props.history}
+            activeRegion={props.activeRegion}
             setActiveRegion={props.setActiveRegion}
           />
           <div
@@ -122,6 +170,7 @@ const RegionViewer = (props) => {
         </WLayout>
       ) : (
         history.push('/')
+        // console.log('auth not accepted')
       )}
     </div>
   )

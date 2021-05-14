@@ -1,3 +1,5 @@
+import { GET_DB_REGIONS } from '../cache/queries'
+
 export class jsTPS_Transaction {
   constructor() {}
   doTransaction() {}
@@ -86,6 +88,63 @@ export class SortItems_Transaction extends jsTPS_Transaction {
   }
 }
 
+export class UpdateRegions_Transaction extends jsTPS_Transaction {
+  // opcodes: 0 - delete, 1 - add
+  constructor(
+    parentId,
+    subregionId,
+    region,
+    opcode,
+    addfunc,
+    delfunc,
+    index = -1
+  ) {
+    super()
+    this.parentId = parentId
+    this.subregionId = subregionId
+    this.region = region
+    this.addFunction = addfunc
+    this.deleteFunction = delfunc
+    this.opcode = opcode
+    this.index = index
+  }
+  async doTransaction() {
+    console.log(this.parentId, this.subregionId, this.index, this.opcode)
+    let data
+    this.opcode === 0
+      ? ({ data } = await this.deleteFunction({
+          variables: { parentId: this.parentId, subregionId: this.subregionId },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
+        }))
+      : ({ data } = await this.addFunction({
+          variables: { region: this.region, index: this.index },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
+        }))
+    if (this.opcode !== 0) {
+      console.log(data)
+      this.region = data.addSubregion
+      this.parentId = data.addSubregion.parentRegion
+      this.subregionId = data.addSubregion._id
+    }
+    return data
+  }
+  // Since delete/add are opposites, flip matching opcode
+  async undoTransaction() {
+    let data
+    this.opcode === 1
+      ? ({ data } = await this.deleteFunction({
+          variables: { parentId: this.parentId, subregionId: this.subregionId },
+        }))
+      : ({ data } = await this.addFunction({
+          variables: { region: this.region, index: this.index },
+        }))
+    if (this.opcode !== 1) {
+      this.item._id = this.itemID = data.addItem
+    }
+    return data
+  }
+}
+
 export class EditRegion_Transaction extends jsTPS_Transaction {
   constructor(_id, field, prev, update, callback) {
     super()
@@ -121,7 +180,42 @@ export class EditRegion_Transaction extends jsTPS_Transaction {
   }
 }
 
-/*  Handles create/delete of list items */
+export class DeleteSubregion_Transaction extends jsTPS_Transaction {
+  constructor(_id, subregionId, prev, callback, undoFunction) {
+    super()
+    this._id = _id
+    this.subregionId = subregionId
+    this.prev = prev
+    this.updateFunction = callback
+    this.undoFunction = undoFunction
+  }
+
+  async doTransaction() {
+    console.log('transaction deleting', this.subregionId)
+    const { data } = await this.updateFunction({
+      variables: {
+        parentId: this._id,
+        subregionId: this.subregionId,
+      },
+    })
+    console.log(data)
+    return data
+  }
+
+  async undoTransaction() {
+    console.log('undo: ', this.prev, this.update)
+    const { data } = await this.undoFunction({
+      variables: {
+        _id: this._id,
+        field: 'subregions',
+        value: this.prev,
+      },
+    })
+    if (data) console.log(data)
+    return data
+  }
+}
+
 export class UpdateListItems_Transaction extends jsTPS_Transaction {
   // opcodes: 0 - delete, 1 - add
   constructor(listID, itemID, item, opcode, addfunc, delfunc, index = -1) {
@@ -239,7 +333,7 @@ export class jsTPS {
    */
   async doTransaction() {
     let retVal
-    if (this.isPerformingDo() || this.isPerformingUndo()) return
+    // if (this.isPerformingDo() || this.isPerformingUndo()) return
     if (this.hasTransactionToRedo()) {
       this.performingDo = true
       let transaction = this.transactions[this.mostRecentTransaction + 1]
@@ -250,7 +344,7 @@ export class jsTPS {
     console.log('transactions: ' + this.getSize())
     console.log('redo transactions:' + this.getRedoSize())
     console.log('undo transactions:' + this.getUndoSize())
-    console.log(this.mostRecentTransaction)
+    // console.log(this.mostRecentTransaction)
     console.log(' ')
     return retVal
   }
@@ -287,11 +381,12 @@ export class jsTPS {
    */
   async undoTransaction() {
     let retVal
-    if (this.isPerformingDo() || this.isPerformingUndo()) return
+    // if (this.isPerformingDo() || this.isPerformingUndo()) return
     if (this.hasTransactionToUndo()) {
       this.performingUndo = true
       let transaction = this.transactions[this.mostRecentTransaction]
       retVal = await transaction.undoTransaction()
+      console.log(retVal)
       this.mostRecentTransaction--
       this.performingUndo = false
     }
@@ -357,7 +452,7 @@ export class jsTPS {
    * return true if an undo operation is possible, false otherwise.
    */
   hasTransactionToUndo() {
-    return this.mostRecentTransaction >= 0
+    return this.getUndoSize() >= 0
   }
 
   /**
@@ -367,7 +462,7 @@ export class jsTPS {
    * return true if a redo operation is possible, false otherwise.
    */
   hasTransactionToRedo() {
-    return this.mostRecentTransaction < this.transactions.length - 1
+    return this.getRedoSize() > 0
   }
 
   /**

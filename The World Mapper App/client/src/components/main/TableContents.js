@@ -2,6 +2,7 @@ import React from 'react'
 import TableEntry from './TableEntry'
 import { useMutation, useQuery } from '@apollo/client'
 import { GET_REGION_BY_ID, GET_DB_REGIONS } from '../../cache/queries'
+import { useHistory } from 'react-router'
 
 const TableContents = (props) => {
   //   let entries = props.activeList ? props.activeList.items : null
@@ -16,7 +17,7 @@ const TableContents = (props) => {
     entryCount = entries.length
   }
 
-  console.log(entryCount)
+  const history = useHistory()
 
   return entries !== undefined && entries.length > 0 ? (
     <div className=' table-entries container-primary'>
@@ -27,9 +28,11 @@ const TableContents = (props) => {
           index={index}
           entryCount={entryCount}
           setActiveRegion={props.setActiveRegion}
-          //   deleteItem={props.deleteItem}
-          //   reorderItem={props.reorderItem}
+          activeRegion={props.activeRegion}
           editSubregion={props.editSubregion}
+          //   reorderItem={props.reorderItem}
+          deleteSubregion={props.deleteSubregion}
+          history={history}
         />
       ))}
     </div>

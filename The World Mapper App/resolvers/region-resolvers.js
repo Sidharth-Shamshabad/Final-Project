@@ -90,7 +90,7 @@ module.exports = {
       else return ''
     },
     addSubregion: async (_, args) => {
-      const { region } = args
+      const { region, index } = args
       const objectId = new ObjectId()
       const {
         _id,
@@ -125,7 +125,8 @@ module.exports = {
 
       const parent = await Region.findOne({ _id: parentRegion })
       let updatedSubregionsList = parent.subregions
-      updatedSubregionsList.push(objectId)
+      if (index < 0) updatedSubregionsList.push(objectId)
+      else updatedSubregionsList.splice(index, 0, objectId)
 
       const parentUpdated = await Region.updateOne(
         { _id: parentRegion },
@@ -135,6 +136,39 @@ module.exports = {
       else return 'Could not add subregion'
     },
     updateSubregionField: async (_, args) => {
+      const { _id, field } = args
+      let { value } = args
+      const id = new ObjectId(_id)
+      const found = await Region.findOne({ _id: id })
+      let updatedRegion = found
+      updatedRegion[field] = value
+      console.log('initial value', found)
+      const updated = await Region.updateOne({ _id: id }, { [field]: value })
+      console.log('updated value', updatedRegion)
+      if (updated) return updatedRegion
+      else return found
+    },
+    removeSubregion: async (_, args) => {
+      const { parentId, subregionId } = args
+      const id = new ObjectId(parentId)
+      const found = await Region.findOne({ _id: id })
+      let updatedRegion = found
+      console.log(subregionId)
+      // let newSubregions = updatedRegion.subregions
+      for (let i = 0; i < updatedRegion.subregions.length; i++) {
+        const element = updatedRegion.subregions[i]
+        if (element === subregionId) {
+          updatedRegion.subregions.splice(i, 1)
+        }
+      }
+      const updated = await Region.updateOne(
+        { _id: parentId },
+        { subregions: updatedRegion.subregions }
+      )
+      if (updated) return updatedRegion
+      else return found
+    },
+    readdSubregion: async (_, args) => {
       const { _id, field } = args
       let { value } = args
       const id = new ObjectId(_id)
