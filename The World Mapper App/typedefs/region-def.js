@@ -27,6 +27,7 @@ const typeDefs = gql`
     updateSubregionField(_id: String!, field: String!, value: String!): Region
     removeSubregion(parentId: String!, subregionId: String!): Region
     readdSubregion(_id: String!, field: String!, value: [String]): Region
+    sortSubregions(_id: String, criteria: String!): [Region]
   }
   input RegionInput {
     _id: String

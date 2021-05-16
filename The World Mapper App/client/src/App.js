@@ -40,13 +40,12 @@ const App = () => {
   }
 
   let user = null
+  // useEffect(() => {
+  // }, [input])
   let transactionStack = new jsTPS()
   let refreshTps = false
   const { loading, error, data, refetch } = useQuery(queries.GET_DB_USER)
   console.log('USER DATA', data)
-
-  const [leftSibling, setLeftSibling] = useState('')
-  const [rightSibling, setRightSibling] = useState('')
 
   if (error) {
     console.log(error)

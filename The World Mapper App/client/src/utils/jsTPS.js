@@ -344,7 +344,7 @@ export class jsTPS {
     console.log('transactions: ' + this.getSize())
     console.log('redo transactions:' + this.getRedoSize())
     console.log('undo transactions:' + this.getUndoSize())
-    // console.log(this.mostRecentTransaction)
+    console.log(this.transactions)
     console.log(' ')
     return retVal
   }
@@ -452,7 +452,7 @@ export class jsTPS {
    * return true if an undo operation is possible, false otherwise.
    */
   hasTransactionToUndo() {
-    return this.getUndoSize() >= 0
+    return this.mostRecentTransaction >= 0
   }
 
   /**
@@ -462,7 +462,7 @@ export class jsTPS {
    * return true if a redo operation is possible, false otherwise.
    */
   hasTransactionToRedo() {
-    return this.getRedoSize() > 0
+    return this.mostRecentTransaction < this.transactions.length - 1
   }
 
   /**

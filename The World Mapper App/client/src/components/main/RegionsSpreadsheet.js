@@ -24,10 +24,12 @@ const RegionsSpreadsheet = (props) => {
     refetchQueries: [{ query: GET_DB_REGIONS }],
   })
 
-  if (data) {
-    const currentActiveRegion = data.getRegionById
-    props.setActiveRegion(currentActiveRegion)
-  }
+  useEffect(() => {
+    if (data) {
+      const currentActiveRegion = data.getRegionById
+      props.setActiveRegion(currentActiveRegion)
+    }
+  }, [data])
 
   const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo())
   const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo())
@@ -108,7 +110,7 @@ const RegionsSpreadsheet = (props) => {
       UpdateSubregionField
     )
     props.tps.addTransaction(transaction)
-    tpsRedo()
+    // tpsRedo()
   }
 
   const deleteSubregion = async (_id, region, subregionId, field, index) => {
@@ -137,7 +139,7 @@ const RegionsSpreadsheet = (props) => {
     // props.tps.addTransaction(transaction)
     tpsRedo()
   }
-
+  console.log(auth)
   return (
     <div>
       {auth === true ? (
@@ -178,7 +180,8 @@ const RegionsSpreadsheet = (props) => {
           </WMMain>
         </WLayout>
       ) : (
-        history.push('/')
+        // history.push('/')
+        console.log('pls work')
       )}
     </div>
   )

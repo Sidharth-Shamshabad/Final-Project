@@ -152,6 +152,25 @@ export const READD_SUBREGION = gql`
   }
 `
 
+export const SORT_SUBREGIONS = gql`
+  mutation sortSubregions($_id: String!, $criteria: String!) {
+    sortSubregions(_id: $_id, criteria: $criteria) {
+      _id
+      id
+      name
+      owner
+      parentRegion
+      subregions
+      capital
+      leader
+      flag
+      landmarks
+      sortRule
+      sortDirection
+    }
+  }
+`
+
 export const ADD_ITEM = gql`
   mutation AddItem($item: ItemInput!, $_id: String!, $index: Int!) {
     addItem(item: $item, _id: $_id, index: $index)

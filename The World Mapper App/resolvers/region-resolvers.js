@@ -181,5 +181,48 @@ module.exports = {
       if (updated) return updatedRegion
       else return found
     },
+    sortSubregions: async (_, args) => {
+      const { _id, criteria } = args
+      const regionId = new ObjectId(_id)
+      const parentRegion = await Region.findOne({ _id: regionId })
+      let subregionIds = parentRegion.subregions
+      let subregions = []
+      for (let i = 0; i < subregionIds.length; i++) {
+        const element = subregionIds[i]
+        const subregion = await Region.findOne({ _id: element })
+        subregions.push(subregion)
+      }
+      let newDirection = parentRegion.sortDirection === 1 ? -1 : 1
+      console.log(newDirection, parentRegion.sortDirection)
+      let sortedRegions
+
+      switch (criteria) {
+        case 'name':
+          sortedRegions = Sorting.byName(subregions, newDirection)
+          break
+        case 'capital':
+          sortedRegions = Sorting.byCapital(subregions, newDirection)
+          break
+        case 'leader':
+          sortedRegions = Sorting.byLeader(subregions, newDirection)
+          break
+        default:
+          return parentRegion.subregions
+      }
+      let sortedIds = []
+      for (let i = 0; i < sortedRegions.length; i++) {
+        const element = sortedRegions[i]._id
+        sortedIds.push(element)
+      }
+      const updated = await Region.updateOne(
+        { _id: regionId },
+        {
+          subregions: sortedIds,
+          sortRule: criteria,
+          sortDirection: newDirection,
+        }
+      )
+      if (updated) return sortedRegions
+    },
   },
 }

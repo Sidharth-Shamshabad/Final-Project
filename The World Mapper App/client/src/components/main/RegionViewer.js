@@ -1,6 +1,6 @@
 import React from 'react'
 import Header from './Header'
-import { WLayout, WRow, WCol, WButton } from 'wt-frontend'
+import { WMMain, WLayout, WRow, WCol, WButton } from 'wt-frontend'
 import { useHistory, useParams } from 'react-router'
 import { useMutation, useQuery } from '@apollo/client'
 import { GET_REGION_BY_ID } from '../../cache/queries'
@@ -107,17 +107,25 @@ const RegionViewer = (props) => {
                 </h2>
               </div>
             </div>
-            <div
-              style={{
-                width: '50%',
-                backgroundColor: 'black',
-                margin: '5%',
-                height: '100%',
-              }}
-            >
-              <div>
-                <h1 style={{ color: 'white' }}>Region Landmarks:</h1>
-              </div>
+            <div style={{ width: '50%' }}>
+              <WLayout wLayout='header'>
+                <div>
+                  <h1 style={{ color: 'white' }}>Region Landmarks:</h1>
+                </div>
+              </WLayout>
+              <WMMain style={{ height: '80%' }}>
+                <div
+                // style={{
+                //   width: '100%',
+                //   backgroundColor: 'black',
+                //   // margin: '5%',
+                //   height: '100%',
+                //   padding: '25%',
+                // }}
+                >
+                  test
+                </div>
+              </WMMain>
             </div>
           </div>
         </WLayout>

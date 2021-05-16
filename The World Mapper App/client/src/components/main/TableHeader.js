@@ -8,32 +8,34 @@ import * as mutations from '../../cache/mutations'
 import { UpdateRegions_Transaction } from '../../utils/jsTPS'
 
 const TableHeader = (props) => {
+  console.log('TABLE HEADER TRANSACTIONSsss', props.tps.transactions)
   const clickDisabled = () => {}
   const buttonStyle = props.disabled
     ? ' table-header-button-disabled '
     : 'table-header-button '
 
   const undoOptions = {
-    className: !props.hasUndo
+    className: !props.canUndo
       ? ' table-header-button-disabled '
       : 'table-header-button',
-    onClick: !props.hasUndo ? clickDisabled : props.undo,
+    onClick: !props.canUndo ? clickDisabled : props.undo,
     wType: 'texted',
-    clickAnimation: !props.hasUndo ? '' : 'ripple-light',
+    clickAnimation: !props.canUndo ? '' : 'ripple-light',
     shape: 'rounded',
   }
 
   const redoOptions = {
-    className: !props.hasRedo
+    className: !props.setCanRedo
       ? ' table-header-button-disabled '
       : 'table-header-button ',
-    onClick: !props.hasRedo ? clickDisabled : props.redo,
+    onClick: !props.setCanRedo ? clickDisabled : props.redo,
     wType: 'texted',
-    clickAnimation: !props.hasRedo ? '' : 'ripple-light',
+    clickAnimation: !props.setCanRedo ? '' : 'ripple-light',
     shape: 'rounded',
   }
   const [AddSubregion] = useMutation(ADD_SUBREGION)
   const [RemoveSubregion] = useMutation(mutations.REMOVE_SUBREGION)
+  const [SortSubregions] = useMutation(mutations.SORT_SUBREGIONS)
 
   const handleAddSubregion = async (e) => {
     const length = props.activeRegion.length
@@ -84,6 +86,13 @@ const TableHeader = (props) => {
     // props.fetchUser()
     // props.refetchRegions()
     // }
+  }
+
+  const handleSortSubregions = async (e, criteria) => {
+    const { data } = await SortSubregions({
+      variables: { _id: props.parentRegionId, criteria: criteria },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
+    })
   }
 
   return (
@@ -137,6 +146,9 @@ const TableHeader = (props) => {
           backgroundColor: 'red',
           // height: '10%',
         }}
+        onClick={(e) => {
+          handleSortSubregions(e, 'name')
+        }}
       >
         <WCol size='3'>
           <WButton
@@ -153,6 +165,9 @@ const TableHeader = (props) => {
             className='table-header-section'
             wType='texted'
             // style={{ paddingLeft: '2.5%' }}
+            onClick={(e) => {
+              handleSortSubregions(e, 'capital')
+            }}
           >
             Capital
           </WButton>
@@ -163,6 +178,9 @@ const TableHeader = (props) => {
             className='table-header-section'
             wType='texted'
             // style={{ paddingLeft: '2.5%' }}
+            onClick={(e) => {
+              handleSortSubregions(e, 'leader')
+            }}
           >
             Leader
           </WButton>

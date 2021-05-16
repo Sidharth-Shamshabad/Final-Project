@@ -71,4 +71,12 @@ const byAssignedTo = (items, direction) => {
   return items
 }
 
-module.exports = { byTask, byDueDate, byStatus, byAssignedTo }
+module.exports = {
+  byTask,
+  byDueDate,
+  byStatus,
+  byAssignedTo,
+  byName,
+  byCapital,
+  byLeader,
+}

@@ -163,7 +163,16 @@ const TableEntry = (props) => {
           />
         ) : (
           <div
-            style={{ display: 'flex', height: '100%', alignItems: 'center' }}
+            style={{
+              display: 'flex',
+              height: '100%',
+              alignItems: 'center',
+              backgroundColor: 'white',
+              color: 'black',
+              fontWeight: '400',
+              marginRight: '10%',
+              marginLeft: '1%',
+            }}
           >
             <div
               style={{ height: '100%', width: '100%' }}
@@ -195,7 +204,16 @@ const TableEntry = (props) => {
           />
         ) : (
           <div
-            style={{ display: 'flex', height: '100%', alignItems: 'center' }}
+            style={{
+              display: 'flex',
+              height: '100%',
+              alignItems: 'center',
+              backgroundColor: 'white',
+              color: 'black',
+              fontWeight: '400',
+              marginRight: '10%',
+              marginLeft: '1%',
+            }}
           >
             <div
               style={{ height: '100%', width: '100%' }}

@@ -18,6 +18,7 @@ const TableContents = (props) => {
   }
 
   const history = useHistory()
+  // const [editingName, toggleNameEdit] = useState(false)
 
   return entries !== undefined && entries.length > 0 ? (
     <div className=' table-entries container-primary'>
