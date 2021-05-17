@@ -181,8 +181,8 @@ const RegionsSpreadsheet = (props) => {
           </WMMain>
         </WLayout>
       ) : (
-        // history.push('/')
-        console.log('pls work')
+        history.push('/')
+        // console.log('pls work')
       )}
     </div>
   )

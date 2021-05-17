@@ -31,9 +31,9 @@ const LandmarkContents = (props) => {
           key={entry}
           index={index}
           entryCount={entryCount}
-          //   setActiveRegion={props.setActiveRegion}
-          //   activeRegion={props.activeRegion}
-          //   editSubregion={props.editSubregion}
+          setActiveRegion={props.setActiveRegion}
+          activeRegion={props.activeRegion}
+          editLandmark={props.editLandmark}
           //   reorderItem={props.reorderItem}
           //   deleteSubregion={props.deleteSubregion}
           //   history={history}

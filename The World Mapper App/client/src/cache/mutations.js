@@ -190,6 +190,25 @@ export const ADD_LANDMARK = gql`
   }
 `
 
+export const EDIT_LANDMARK = gql`
+  mutation editLandmark($_id: String!, $newLandmark: String!, $index: Int!) {
+    editLandmark(_id: $_id, newLandmark: $newLandmark, index: $index) {
+      _id
+      id
+      name
+      owner
+      parentRegion
+      subregions
+      capital
+      leader
+      flag
+      landmarks
+      sortRule
+      sortDirection
+    }
+  }
+`
+
 export const ADD_ITEM = gql`
   mutation AddItem($item: ItemInput!, $_id: String!, $index: Int!) {
     addItem(item: $item, _id: $_id, index: $index)

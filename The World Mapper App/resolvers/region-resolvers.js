@@ -258,5 +258,17 @@ module.exports = {
       if (updatedRegion) return newRegion
       // else return 'Could not add subregion'
     },
+    editLandmark: async (_, args) => {
+      const { _id, newLandmark, index } = args
+      const region = await Region.findOne({ _id: _id })
+      let landmarks = region.landmarks
+      landmarks[index] = newLandmark
+      const updatedRegion = await Region.updateOne(
+        { _id: _id },
+        { landmarks: landmarks }
+      )
+      const newRegion = await Region.findOne({ _id: _id })
+      if (updatedRegion) return newRegion
+    },
   },
 }

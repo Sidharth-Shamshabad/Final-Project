@@ -76,6 +76,24 @@ const TableEntry = (props) => {
 
   let history = useHistory()
 
+  let landmarksArr = subregion.landmarks ? subregion.landmarks : []
+  let landmarksString = ''
+  console.log(landmarksArr)
+  for (let i = 0; i < landmarksArr.length; i++) {
+    // const element = subregion.landmarks[i]
+    // console.log(element)
+    landmarksString += landmarksArr[i]
+    if (i !== landmarksArr.length - 1) {
+      landmarksString += ', '
+    }
+  }
+  console.log(landmarksString)
+  // if (landmarksString === '') {
+  //   setLandmarks('No Landmarks')
+  // } else {
+  //   setLandmarks(landmarksString)
+  // }
+
   return (
     <WRow
       className='table-entry'
@@ -179,9 +197,9 @@ const TableEntry = (props) => {
               onClick={() => {
                 toggleCapitalEdit(!editingCapital)
               }}
-              onDoubleClick={() => {
-                props.history.push(`/regions/${subregion._id}`)
-              }}
+              // onDoubleClick={() => {
+              //   props.history.push(`/regions/${subregion._id}`)
+              // }}
             >
               {subregion.capital}
             </div>
@@ -220,9 +238,6 @@ const TableEntry = (props) => {
               onClick={(e) => {
                 toggleLeaderEdit(!editingLeader)
               }}
-              // onDoubleClick={(e) => {
-              //   history.push(`/regions/${subregion._id}`)
-              // }}
             >
               {subregion.leader}
             </div>
@@ -239,7 +254,9 @@ const TableEntry = (props) => {
         //   history.push(`/subregion/${entry}`)
         // }}
       >
-        <div onClick={() => handlePushToLandmarks()}>{landmarks}</div>
+        <div onClick={() => handlePushToLandmarks()}>
+          {landmarksString === '' ? 'No Landmarks' : landmarksString}
+        </div>
       </WCol>
       {showDelete && (
         <DeleteSubregion

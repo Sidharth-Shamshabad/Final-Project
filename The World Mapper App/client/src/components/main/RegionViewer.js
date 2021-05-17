@@ -9,6 +9,7 @@ import WLMain from 'wt-frontend/build/components/wlayout/WLMain'
 import { GET_DB_REGIONS } from '../../cache/queries'
 import LandmarkContents from './LandmarkContents'
 import * as mutations from '../../cache/mutations'
+import { EditLandmark_Transaction } from '../../utils/jsTPS'
 
 const RegionViewer = (props) => {
   const auth = props.user === null ? false : true
@@ -20,6 +21,7 @@ const RegionViewer = (props) => {
 
   const [editParentRegion, setEditParentRegion] = useState(false)
   const [AddLandmark] = useMutation(mutations.ADD_LANDMARK)
+  const [EditLandmark] = useMutation(mutations.EDIT_LANDMARK)
 
   const currentRegion = useQuery(GET_REGION_BY_ID, {
     variables: { _id: regionID },
@@ -77,6 +79,29 @@ const RegionViewer = (props) => {
     })
     props.fetchUser()
     // props.refetch()
+  }
+
+  // const handleEditLandmark = async (e) => {
+  //   const { loading, error, data, refetch } = await EditLandmark({
+  //     variables: {
+
+  //     },
+  //     refetchQueries: [{query: GET_DB_REGIONS}]
+  //   })
+  //   props.fetchUser()
+  // }
+
+  const editLandmark = async (_id, value, prev, index) => {
+    let transaction = new EditLandmark_Transaction(
+      _id,
+      value,
+      prev,
+      index,
+      EditLandmark
+    )
+    props.tps.addTransaction(transaction)
+    // console.log(_id, field, value, prev)
+    // tpsRedo()
   }
 
   const { loading, error, data, refetch } = useQuery(GET_DB_REGIONS)
@@ -185,6 +210,7 @@ const RegionViewer = (props) => {
                     landmarks={props.activeRegion.landmarks}
                     activeRegion={props.activeRegion}
                     refetchRegions={refetch}
+                    editLandmark={editLandmark}
                   />
                 </WMMain>
               </WLayout>
