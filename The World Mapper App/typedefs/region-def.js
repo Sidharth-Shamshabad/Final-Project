@@ -31,6 +31,7 @@ const typeDefs = gql`
     sortSubregions(_id: String!, criteria: String!): [Region]
     addLandmark(_id: String!, landmarkName: String!, index: Int!): Region
     editLandmark(_id: String!, newLandmark: String!, index: Int!): Region
+    removeLandmark(_id: String!, index: Int!): Region
   }
   input RegionInput {
     _id: String

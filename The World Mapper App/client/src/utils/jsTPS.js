@@ -134,9 +134,11 @@ export class UpdateRegions_Transaction extends jsTPS_Transaction {
     this.opcode === 1
       ? ({ data } = await this.deleteFunction({
           variables: { parentId: this.parentId, subregionId: this.subregionId },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
         }))
       : ({ data } = await this.addFunction({
           variables: { region: this.region, index: this.index },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
         }))
     if (this.opcode !== 1) {
       this.item._id = this.itemID = data.addItem
@@ -165,6 +167,64 @@ export class EditLandmark_Transaction extends jsTPS_Transaction {
     return data
   }
   async undoTransaction() {}
+}
+
+export class UpdateLandmarks_Transaction extends jsTPS_Transaction {
+  // opcodes: 0 - delete, 1 - add
+  constructor(_id, value, prev, addfunc, delfunc, opcode, index = -1) {
+    super()
+    this._id = _id
+    this.value = value
+    this.prev = prev
+    this.addFunction = addfunc
+    this.deleteFunction = delfunc
+    this.opcode = opcode
+    this.index = index
+  }
+  async doTransaction() {
+    let data
+    this.opcode === 0
+      ? ({ data } = await this.deleteFunction({
+          variables: { _id: this._id, index: this.index },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
+        }))
+      : ({ data } = await this.addFunction({
+          variables: {
+            _id: this._id,
+            landmarkName: this.value,
+            index: this.index,
+          },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
+        }))
+    if (this.opcode !== 0) {
+      console.log(data)
+      // this.region = data.addSubregion
+      // this.parentId = data.addSubregion.parentRegion
+      // this.subregionId = data.addSubregion._id
+    }
+    return data
+  }
+  // Since delete/add are opposites, flip matching opcode
+  async undoTransaction() {
+    let data
+    this.opcode === 1
+      ? ({ data } = await this.deleteFunction({
+          variables: {
+            _id: this._id,
+            landmarkName: this.prev,
+            index: this.index,
+          },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
+        }))
+      : ({ data } = await this.addFunction({
+          variables: { _id: this._id, index: this.index },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
+        }))
+    if (this.opcode !== 1) {
+      this.item._id = this.itemID = data.addItem
+    }
+    return data
+  }
 }
 
 export class EditRegion_Transaction extends jsTPS_Transaction {

@@ -9,7 +9,10 @@ import WLMain from 'wt-frontend/build/components/wlayout/WLMain'
 import { GET_DB_REGIONS } from '../../cache/queries'
 import LandmarkContents from './LandmarkContents'
 import * as mutations from '../../cache/mutations'
-import { EditLandmark_Transaction } from '../../utils/jsTPS'
+import {
+  UpdateLandmarks_Transaction,
+  EditLandmark_Transaction,
+} from '../../utils/jsTPS'
 
 const RegionViewer = (props) => {
   const auth = props.user === null ? false : true
@@ -21,6 +24,7 @@ const RegionViewer = (props) => {
 
   const [editParentRegion, setEditParentRegion] = useState(false)
   const [AddLandmark] = useMutation(mutations.ADD_LANDMARK)
+  const [RemoveLandmark] = useMutation(mutations.REMOVE_LANDMARK)
   const [EditLandmark] = useMutation(mutations.EDIT_LANDMARK)
 
   const currentRegion = useQuery(GET_REGION_BY_ID, {
@@ -81,15 +85,20 @@ const RegionViewer = (props) => {
     // props.refetch()
   }
 
-  // const handleEditLandmark = async (e) => {
-  //   const { loading, error, data, refetch } = await EditLandmark({
-  //     variables: {
-
-  //     },
-  //     refetchQueries: [{query: GET_DB_REGIONS}]
-  //   })
-  //   props.fetchUser()
-  // }
+  const updateLandmarks = async (_id, value, prev, opcode, index) => {
+    let transaction = new UpdateLandmarks_Transaction(
+      _id,
+      value,
+      prev,
+      AddLandmark,
+      RemoveLandmark,
+      opcode,
+      index
+    )
+    props.tps.addTransaction(transaction)
+    // console.log(_id, field, value, prev)
+    // tpsRedo()
+  }
 
   const editLandmark = async (_id, value, prev, index) => {
     let transaction = new EditLandmark_Transaction(
@@ -211,6 +220,7 @@ const RegionViewer = (props) => {
                     activeRegion={props.activeRegion}
                     refetchRegions={refetch}
                     editLandmark={editLandmark}
+                    updateLandmarks={updateLandmarks}
                   />
                 </WMMain>
               </WLayout>
@@ -220,7 +230,8 @@ const RegionViewer = (props) => {
                 clickAnimation={props.disabled ? '' : 'ripple-light'}
                 style={{ color: 'green', padding: '0px', marginLeft: '0%' }}
                 onClick={() => {
-                  handleAddLandmark()
+                  // handleAddLandmark()
+                  updateLandmarks(props.activeRegion._id, 'Untitled', '', 1, -1)
                   refetch()
                 }}
               >

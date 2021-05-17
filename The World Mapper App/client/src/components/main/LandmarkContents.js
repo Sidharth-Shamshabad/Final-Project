@@ -34,6 +34,7 @@ const LandmarkContents = (props) => {
           setActiveRegion={props.setActiveRegion}
           activeRegion={props.activeRegion}
           editLandmark={props.editLandmark}
+          updateLandmarks={props.updateLandmarks}
           //   reorderItem={props.reorderItem}
           //   deleteSubregion={props.deleteSubregion}
           //   history={history}

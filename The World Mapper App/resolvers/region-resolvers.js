@@ -270,5 +270,17 @@ module.exports = {
       const newRegion = await Region.findOne({ _id: _id })
       if (updatedRegion) return newRegion
     },
+    removeLandmark: async (_, args) => {
+      const { _id, index } = args
+      const region = await Region.findOne({ _id: _id })
+      let landmarks = region.landmarks
+      landmarks.splice(index, 1)
+      const updatedRegion = await Region.updateOne(
+        { _id: _id },
+        { landmarks: landmarks }
+      )
+      const newRegion = await Region.findOne({ _id: _id })
+      if (updatedRegion) return newRegion
+    },
   },
 }

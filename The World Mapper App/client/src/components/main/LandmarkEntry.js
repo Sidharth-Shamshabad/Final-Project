@@ -93,7 +93,15 @@ const LandmarkEntry = (props) => {
               className='table-header-button'
               clickAnimation={props.disabled ? '' : 'ripple-light'}
               style={{ color: 'black', marginLeft: '0px', color: 'red' }}
-              //   onClick={setShowDelete}
+              onClick={() => {
+                props.updateLandmarks(
+                  props.activeRegion._id,
+                  '',
+                  entry,
+                  0,
+                  props.index
+                )
+              }}
             >
               <i className='material-icons'>delete_outline</i>
             </WButton>
