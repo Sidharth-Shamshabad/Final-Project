@@ -67,3 +67,22 @@ export const GET_REGION_BY_ID = gql`
     }
   }
 `
+
+export const GET_ALL_ACTIVE_REGIONS = gql`
+  query getAllActiveRegions {
+    getAllActiveRegions {
+      _id
+      id
+      name
+      owner
+      parentRegion
+      subregions
+      capital
+      leader
+      flag
+      landmarks
+      sortRule
+      sortDirection
+    }
+  }
+`

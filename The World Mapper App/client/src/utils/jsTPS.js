@@ -156,6 +156,13 @@ export class EditRegion_Transaction extends jsTPS_Transaction {
   }
 
   async doTransaction() {
+    console.log(
+      this._id,
+      this.field,
+      this.prev,
+      this.update,
+      this.updateFunction
+    )
     const { data } = await this.updateFunction({
       variables: {
         _id: this._id,
@@ -323,7 +330,7 @@ export class jsTPS {
     // AND NOW ADD THE TRANSACTION
     this.transactions.push(transaction)
     // AND EXECUTE IT
-    // this.doTransaction();
+    this.doTransaction()
   }
 
   /**

@@ -171,6 +171,25 @@ export const SORT_SUBREGIONS = gql`
   }
 `
 
+export const ADD_LANDMARK = gql`
+  mutation addLandmark($_id: String!, $landmarkName: String!, $index: Int!) {
+    addLandmark(_id: $_id, landmarkName: $landmarkName, index: $index) {
+      _id
+      id
+      name
+      owner
+      parentRegion
+      subregions
+      capital
+      leader
+      flag
+      landmarks
+      sortRule
+      sortDirection
+    }
+  }
+`
+
 export const ADD_ITEM = gql`
   mutation AddItem($item: ItemInput!, $_id: String!, $index: Int!) {
     addItem(item: $item, _id: $_id, index: $index)

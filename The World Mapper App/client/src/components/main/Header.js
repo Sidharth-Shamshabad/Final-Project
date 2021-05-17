@@ -147,7 +147,7 @@ const Header = (props) => {
             }}
             style={{ padding: '0px' }}
           >
-            <i className='material-icons'>undo</i>
+            <i className='material-icons'>arrow_left</i>
           </WButton>
           <WButton
             {...rightSiblingOptions}
@@ -160,7 +160,7 @@ const Header = (props) => {
             }}
             style={{ padding: '0px' }}
           >
-            <i className='material-icons'>redo</i>
+            <i className='material-icons'>arrow_right</i>
           </WButton>
           <ul>
             <NavbarOptions

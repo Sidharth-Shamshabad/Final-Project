@@ -18,6 +18,7 @@ const typeDefs = gql`
   extend type Query {
     getAllRegions: [Region]
     getRegionById(_id: String!): Region
+    getAllActiveRegions: [Region]
   }
   extend type Mutation {
     createMapFile(region: RegionInput!): Region
@@ -27,7 +28,8 @@ const typeDefs = gql`
     updateSubregionField(_id: String!, field: String!, value: String!): Region
     removeSubregion(parentId: String!, subregionId: String!): Region
     readdSubregion(_id: String!, field: String!, value: [String]): Region
-    sortSubregions(_id: String, criteria: String!): [Region]
+    sortSubregions(_id: String!, criteria: String!): [Region]
+    addLandmark(_id: String!, landmarkName: String!, index: Int!): Region
   }
   input RegionInput {
     _id: String

@@ -34,6 +34,18 @@ module.exports = {
       if (region) return region
       else return {}
     },
+    getAllActiveRegions: async (_, __, { req }) => {
+      const _id = new ObjectId(req.userId)
+      if (!_id) {
+        return []
+      }
+      const regions = await Region.find({ owner: _id }).sort({
+        updatedAt: 'descending',
+      })
+      const parentRegions = regions.filter(
+        (region) => region.parentRegion === 'none'
+      )
+    },
   },
   Mutation: {
     createMapFile: async (_, args) => {
@@ -107,26 +119,30 @@ module.exports = {
         sortDirection,
       } = region
 
-      const newRegion = new Region({
-        _id: objectId,
-        id: id,
-        name: name,
-        owner: owner,
-        parentRegion: parentRegion,
-        subregions: subregions,
-        capital: capital,
-        leader: leader,
-        flag: flag,
-        landmarks: landmarks,
-        sortRule: sortRule,
-        sortDirection: sortDirection,
-      })
-      const updated = await newRegion.save()
+      let updated = null
 
       const parent = await Region.findOne({ _id: parentRegion })
       let updatedSubregionsList = parent.subregions
-      if (index < 0) updatedSubregionsList.push(objectId)
-      else updatedSubregionsList.splice(index, 0, objectId)
+      if (index < 0) {
+        const newRegion = new Region({
+          _id: objectId,
+          id: id,
+          name: name,
+          owner: owner,
+          parentRegion: parentRegion,
+          subregions: subregions,
+          capital: capital,
+          leader: leader,
+          flag: flag,
+          landmarks: landmarks,
+          sortRule: sortRule,
+          sortDirection: sortDirection,
+        })
+        updated = await newRegion.save()
+        updatedSubregionsList.push(objectId)
+      } else {
+        updatedSubregionsList.splice(index, 0, _id)
+      }
 
       const parentUpdated = await Region.updateOne(
         { _id: parentRegion },
@@ -136,6 +152,7 @@ module.exports = {
       else return 'Could not add subregion'
     },
     updateSubregionField: async (_, args) => {
+      console.log('UPDATE SUBREGION RESOLVER')
       const { _id, field } = args
       let { value } = args
       const id = new ObjectId(_id)
@@ -223,6 +240,23 @@ module.exports = {
         }
       )
       if (updated) return sortedRegions
+    },
+    addLandmark: async (_, args) => {
+      const { _id, landmarkName, index } = args
+
+      const region = await Region.findOne({ _id: _id })
+      let landmarks = region.landmarks
+
+      if (index < 0) landmarks.push(landmarkName)
+      else landmarks.splice(index, 0, landmarkName)
+
+      const updatedRegion = await Region.updateOne(
+        { _id: _id },
+        { landmarks: landmarks }
+      )
+      const newRegion = await Region.findOne({ _id: _id })
+      if (updatedRegion) return newRegion
+      // else return 'Could not add subregion'
     },
   },
 }

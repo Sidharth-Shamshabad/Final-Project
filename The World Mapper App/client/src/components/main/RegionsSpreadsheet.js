@@ -110,6 +110,7 @@ const RegionsSpreadsheet = (props) => {
       UpdateSubregionField
     )
     props.tps.addTransaction(transaction)
+    console.log(_id, field, value, prev)
     // tpsRedo()
   }
 
