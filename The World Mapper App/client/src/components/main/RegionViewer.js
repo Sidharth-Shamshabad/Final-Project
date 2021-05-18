@@ -6,13 +6,9 @@ import { useMutation, useQuery } from '@apollo/client'
 import { GET_REGION_BY_ID } from '../../cache/queries'
 import WLSide from 'wt-frontend/build/components/wlayout/WLSide'
 import WLMain from 'wt-frontend/build/components/wlayout/WLMain'
-import { GET_DB_REGIONS } from '../../cache/queries'
+import { GET_DB_REGIONS, GET_REGION_PATH } from '../../cache/queries'
 import LandmarkContents from './LandmarkContents'
 import * as mutations from '../../cache/mutations'
-import {
-  UpdateLandmarks_Transaction,
-  EditLandmark_Transaction,
-} from '../../utils/jsTPS'
 
 const RegionViewer = (props) => {
   const auth = props.user === null ? false : true
@@ -22,10 +18,27 @@ const RegionViewer = (props) => {
   const regionID = params.any
   console.log(regionID)
 
+  const regionPath = useQuery(GET_REGION_PATH, {
+    variables: { _id: regionID },
+  })
+  let regionPaths = []
+  if (regionPath.data) {
+    regionPaths = regionPath.data.getRegionPath
+  }
+
+  let pathString = '/The World'
+
+  for (let i = 0; i < regionPaths.length; i++) {
+    const element = regionPaths[i]
+    pathString += '/' + element.name
+    if (i == regionPaths.length - 1) {
+      pathString += ' Flag.png'
+    }
+  }
+
+  console.log('REGION VIEWER', pathString)
+
   const [editParentRegion, setEditParentRegion] = useState(false)
-  const [AddLandmark] = useMutation(mutations.ADD_LANDMARK)
-  const [RemoveLandmark] = useMutation(mutations.REMOVE_LANDMARK)
-  const [EditLandmark] = useMutation(mutations.EDIT_LANDMARK)
 
   const currentRegion = useQuery(GET_REGION_BY_ID, {
     variables: { _id: regionID },
@@ -68,54 +81,35 @@ const RegionViewer = (props) => {
     }
     setEditParentRegion(false)
   }
+  const clickDisabled = () => {}
   const buttonStyle = props.disabled
     ? ' table-header-button-disabled '
     : 'table-header-button '
 
-  const handleAddLandmark = async (e) => {
-    const { loading, error, data, refetch } = await AddLandmark({
-      variables: {
-        _id: props.activeRegion._id,
-        landmarkName: 'Untitled',
-        index: -1,
-      },
-      refetchQueries: [{ query: GET_DB_REGIONS }],
-    })
-    props.fetchUser()
-    // props.refetch()
+  const undoOptions = {
+    className:
+      !props.tps.getUndoSize() > 0
+        ? ' table-header-button-disabled '
+        : 'table-header-button',
+    onClick: !props.tps.getUndoSize() > 0 ? clickDisabled : props.undo,
+    wType: 'texted',
+    clickAnimation: !props.tps.getUndoSize() > 0 ? '' : 'ripple-light',
+    shape: 'rounded',
   }
 
-  const updateLandmarks = async (_id, value, prev, opcode, index) => {
-    let transaction = new UpdateLandmarks_Transaction(
-      _id,
-      value,
-      prev,
-      AddLandmark,
-      RemoveLandmark,
-      opcode,
-      index
-    )
-    props.tps.addTransaction(transaction)
-    // console.log(_id, field, value, prev)
-    // tpsRedo()
-  }
-
-  const editLandmark = async (_id, value, prev, index) => {
-    let transaction = new EditLandmark_Transaction(
-      _id,
-      value,
-      prev,
-      index,
-      EditLandmark
-    )
-    props.tps.addTransaction(transaction)
-    // console.log(_id, field, value, prev)
-    // tpsRedo()
+  const redoOptions = {
+    className:
+      !props.tps.getRedoSize() > 0
+        ? ' table-header-button-disabled '
+        : 'table-header-button ',
+    onClick: !props.tps.getRedoSize() > 0 ? clickDisabled : props.redo,
+    wType: 'texted',
+    clickAnimation: !props.tps.getRedoSize() > 0 ? '' : 'ripple-light',
+    shape: 'rounded',
   }
 
   const { loading, error, data, refetch } = useQuery(GET_DB_REGIONS)
   if (data) {
-    // refetch()
   }
 
   return (
@@ -140,7 +134,18 @@ const RegionViewer = (props) => {
           >
             <div style={{ width: '50%' }}>
               <div style={{ width: '100%' }}>
-                <h1>Flag</h1>
+                <div>
+                  <WButton {...undoOptions} style={{ padding: '0px' }}>
+                    <i className='material-icons'>undo</i>
+                  </WButton>
+                  <WButton {...redoOptions} style={{ padding: '0px' }}>
+                    <i className='material-icons'>redo</i>
+                  </WButton>
+                </div>
+                <img
+                  style={{ width: '50%', height: '50%', alignItems: 'center' }}
+                  src={pathString}
+                ></img>
                 <h2 style={{ color: 'white' }}>
                   Region Name: {props.activeRegion.name}
                 </h2>
@@ -219,8 +224,8 @@ const RegionViewer = (props) => {
                     landmarks={props.activeRegion.landmarks}
                     activeRegion={props.activeRegion}
                     refetchRegions={refetch}
-                    editLandmark={editLandmark}
-                    updateLandmarks={updateLandmarks}
+                    editLandmark={props.editLandmark}
+                    updateLandmarks={props.updateLandmarks}
                   />
                 </WMMain>
               </WLayout>
@@ -231,7 +236,13 @@ const RegionViewer = (props) => {
                 style={{ color: 'green', padding: '0px', marginLeft: '0%' }}
                 onClick={() => {
                   // handleAddLandmark()
-                  updateLandmarks(props.activeRegion._id, 'Untitled', '', 1, -1)
+                  props.updateLandmarks(
+                    props.activeRegion._id,
+                    'Untitled',
+                    '',
+                    1,
+                    -1
+                  )
                   refetch()
                 }}
               >

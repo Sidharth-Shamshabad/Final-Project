@@ -34,6 +34,7 @@ const TableContents = (props) => {
           //   reorderItem={props.reorderItem}
           deleteSubregion={props.deleteSubregion}
           history={history}
+          refetchRegions={props.refetchRegions}
         />
       ))}
     </div>

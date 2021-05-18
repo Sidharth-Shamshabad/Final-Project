@@ -5,88 +5,6 @@ export class jsTPS_Transaction {
   doTransaction() {}
   undoTransaction() {}
 }
-/*  Handles list name changes, or any other top level details of a todolist that may be added   */
-export class UpdateListField_Transaction extends jsTPS_Transaction {
-  constructor(_id, field, prev, update, callback) {
-    super()
-    this.prev = prev
-    this.update = update
-    this.field = field
-    this._id = _id
-    this.updateFunction = callback
-  }
-  async doTransaction() {
-    const { data } = await this.updateFunction({
-      variables: { _id: this._id, field: this.field, value: this.update },
-    })
-    return data
-  }
-  async undoTransaction() {
-    const { data } = await this.updateFunction({
-      variables: { _id: this._id, field: this.field, value: this.prev },
-    })
-    return data
-  }
-}
-
-/*  Handles item reordering */
-export class ReorderItems_Transaction extends jsTPS_Transaction {
-  constructor(listID, itemID, dir, callback) {
-    super()
-    this.listID = listID
-    this.itemID = itemID
-    this.dir = dir
-    this.revDir = dir === 1 ? -1 : 1
-    this.updateFunction = callback
-  }
-
-  async doTransaction() {
-    const { data } = await this.updateFunction({
-      variables: { itemId: this.itemID, _id: this.listID, direction: this.dir },
-    })
-    return data
-  }
-
-  async undoTransaction() {
-    const { data } = await this.updateFunction({
-      variables: {
-        itemId: this.itemID,
-        _id: this.listID,
-        direction: this.revDir,
-      },
-    })
-    return data
-  }
-}
-
-export class SortItems_Transaction extends jsTPS_Transaction {
-  constructor(listID, nextSortRule, prevSortRule, callback) {
-    super()
-    this.listID = listID
-    this.nextSortRule = nextSortRule
-    this.prevSortRule = prevSortRule
-    this.updateFunction = callback
-  }
-  async doTransaction() {
-    const { data } = await this.updateFunction({
-      variables: { _id: this.listID, criteria: this.nextSortRule },
-    })
-    if (data) {
-      console.log(data)
-      return data
-    }
-  }
-
-  async undoTransaction() {
-    const { data } = await this.updateFunction({
-      variables: { _id: this.listID, criteria: this.prevSortRule },
-    })
-    if (data) {
-      console.log(data)
-      return data
-    }
-  }
-}
 
 export class UpdateRegions_Transaction extends jsTPS_Transaction {
   // opcodes: 0 - delete, 1 - add
@@ -97,6 +15,7 @@ export class UpdateRegions_Transaction extends jsTPS_Transaction {
     opcode,
     addfunc,
     delfunc,
+    restorefunc,
     index = -1
   ) {
     super()
@@ -105,6 +24,7 @@ export class UpdateRegions_Transaction extends jsTPS_Transaction {
     this.region = region
     this.addFunction = addfunc
     this.deleteFunction = delfunc
+    this.addDeleted = restorefunc
     this.opcode = opcode
     this.index = index
   }
@@ -115,13 +35,13 @@ export class UpdateRegions_Transaction extends jsTPS_Transaction {
       ? ({ data } = await this.deleteFunction({
           variables: { parentId: this.parentId, subregionId: this.subregionId },
           refetchQueries: [{ query: GET_DB_REGIONS }],
-        }))
+        })) // returns parent region object
       : ({ data } = await this.addFunction({
           variables: { region: this.region, index: this.index },
           refetchQueries: [{ query: GET_DB_REGIONS }],
         }))
     if (this.opcode !== 0) {
-      console.log(data)
+      console.log(data, this.opcode)
       this.region = data.addSubregion
       this.parentId = data.addSubregion.parentRegion
       this.subregionId = data.addSubregion._id
@@ -136,12 +56,18 @@ export class UpdateRegions_Transaction extends jsTPS_Transaction {
           variables: { parentId: this.parentId, subregionId: this.subregionId },
           refetchQueries: [{ query: GET_DB_REGIONS }],
         }))
-      : ({ data } = await this.addFunction({
-          variables: { region: this.region, index: this.index },
+      : ({ data } = await this.addDeleted({
+          variables: {
+            parentId: this.parentId,
+            childId: this.subregionId,
+            index: this.index,
+          },
           refetchQueries: [{ query: GET_DB_REGIONS }],
         }))
     if (this.opcode !== 1) {
-      this.item._id = this.itemID = data.addItem
+      // this.region = data.addSubregion
+      // this.parentId = data.addSubregion.parentRegion
+      // this.subregionId = data.addSubregion._id
     }
     return data
   }
@@ -422,7 +348,7 @@ export class jsTPS {
    */
   async doTransaction() {
     let retVal
-    // if (this.isPerformingDo() || this.isPerformingUndo()) return
+    if (this.isPerformingDo() || this.isPerformingUndo()) return
     if (this.hasTransactionToRedo()) {
       this.performingDo = true
       let transaction = this.transactions[this.mostRecentTransaction + 1]
@@ -433,7 +359,7 @@ export class jsTPS {
     console.log('transactions: ' + this.getSize())
     console.log('redo transactions:' + this.getRedoSize())
     console.log('undo transactions:' + this.getUndoSize())
-    console.log(this.transactions)
+    console.log(this.mostRecentTransaction)
     console.log(' ')
     return retVal
   }
@@ -470,7 +396,7 @@ export class jsTPS {
    */
   async undoTransaction() {
     let retVal
-    // if (this.isPerformingDo() || this.isPerformingUndo()) return
+    if (this.isPerformingDo() || this.isPerformingUndo()) return
     if (this.hasTransactionToUndo()) {
       this.performingUndo = true
       let transaction = this.transactions[this.mostRecentTransaction]
@@ -542,6 +468,7 @@ export class jsTPS {
    */
   hasTransactionToUndo() {
     return this.mostRecentTransaction >= 0
+    return this.getUndoSize() > 0
   }
 
   /**
@@ -552,6 +479,7 @@ export class jsTPS {
    */
   hasTransactionToRedo() {
     return this.mostRecentTransaction < this.transactions.length - 1
+    return this.getRedoSize() > 0
   }
 
   /**

@@ -86,3 +86,22 @@ export const GET_ALL_ACTIVE_REGIONS = gql`
     }
   }
 `
+
+export const GET_REGION_PATH = gql`
+  query getRegionPath($_id: String!) {
+    getRegionPath(_id: $_id) {
+      _id
+      id
+      name
+      owner
+      parentRegion
+      subregions
+      capital
+      leader
+      flag
+      landmarks
+      sortRule
+      sortDirection
+    }
+  }
+`

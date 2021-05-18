@@ -1,16 +1,18 @@
 import React, { useState } from 'react'
 import { WButton, WInput, WRow, WCol } from 'wt-frontend'
 import { useMutation, useQuery } from '@apollo/client'
-import { GET_REGION_BY_ID, GET_DB_REGIONS } from '../../cache/queries'
+import {
+  GET_REGION_BY_ID,
+  GET_DB_REGIONS,
+  GET_REGION_PATH,
+} from '../../cache/queries'
 import { useHistory } from 'react-router'
 import DeleteSubregion from '../modals/DeleteSubregion'
 
 const TableEntry = (props) => {
   const { entry } = props
-  const [landmarks, setLandmarks] = useState('No Landmarks')
-  // console.log(entry)
 
-  const { loading, error, data } = useQuery(GET_REGION_BY_ID, {
+  const { loading, error, data, refetch } = useQuery(GET_REGION_BY_ID, {
     variables: { _id: entry },
     refetchQueries: [{ query: GET_DB_REGIONS }],
   })
@@ -18,6 +20,25 @@ const TableEntry = (props) => {
   if (data) {
     subregion = data.getRegionById
   }
+
+  const regionPath = useQuery(GET_REGION_PATH, {
+    variables: { _id: subregion._id },
+  })
+  let regionPaths = []
+  if (regionPath.data) {
+    regionPaths = regionPath.data.getRegionPath
+  }
+
+  let pathString = '/The World'
+
+  for (let i = 0; i < regionPaths.length; i++) {
+    const element = regionPaths[i]
+    pathString += '/' + element.name
+    if (i == regionPaths.length - 1) {
+      pathString += ' Flag.png'
+    }
+  }
+  console.log(pathString)
 
   const name = subregion.name
   const capital = subregion.capital
@@ -33,42 +54,48 @@ const TableEntry = (props) => {
     toggleShowDelete(!showDelete)
   }
 
-  // const disabledButton = () => {}
-
-  const handleGoToSubregion = (e) => {}
-
-  const handleNameEdit = (e) => {
+  const handleNameEdit = async (e) => {
     e.stopPropagation()
     toggleNameEdit(false)
     const newName = e.target.value ? e.target.value : 'Untitled'
     const prevName = name
     if (newName !== prevName) {
-      props.editSubregion(subregion._id, 'name', newName, prevName)
+      await props.editSubregion(subregion._id, 'name', newName, prevName)
+      await props.refetchRegions()
+      await refetch()
     }
   }
 
-  const handleCapitalEdit = (e) => {
+  const handleCapitalEdit = async (e) => {
     e.stopPropagation()
     toggleCapitalEdit(false)
     const newCapital = e.target.value ? e.target.value : 'Untitled'
     const prevCapital = capital
     if (newCapital !== prevCapital) {
-      props.editSubregion(subregion._id, 'capital', newCapital, prevCapital)
+      await props.editSubregion(
+        subregion._id,
+        'capital',
+        newCapital,
+        prevCapital
+      )
+      await props.refetchRegions()
+      await refetch()
     }
   }
 
-  const handleLeaderEdit = (e) => {
+  const handleLeaderEdit = async (e) => {
     e.stopPropagation()
     toggleLeaderEdit(false)
     const newLeader = e.target.value ? e.target.value : 'Untitled'
     const prevLeader = leader
     if (newLeader !== prevLeader) {
-      props.editSubregion(subregion._id, 'leader', newLeader, prevLeader)
+      await props.editSubregion(subregion._id, 'leader', newLeader, prevLeader)
+      await props.refetchRegions()
+      await refetch()
     }
   }
 
   const handlePushToLandmarks = (e) => {
-    console.log(entry)
     history.push(`/subregion/${entry}`)
   }
 
@@ -78,34 +105,18 @@ const TableEntry = (props) => {
 
   let landmarksArr = subregion.landmarks ? subregion.landmarks : []
   let landmarksString = ''
-  console.log(landmarksArr)
   for (let i = 0; i < landmarksArr.length; i++) {
-    // const element = subregion.landmarks[i]
-    // console.log(element)
     landmarksString += landmarksArr[i]
     if (i !== landmarksArr.length - 1) {
       landmarksString += ', '
     }
   }
-  console.log(landmarksString)
-  // if (landmarksString === '') {
-  //   setLandmarks('No Landmarks')
-  // } else {
-  //   setLandmarks(landmarksString)
-  // }
-
   return (
     <WRow
       className='table-entry'
       style={{ backgroundColor: 'gray', alignItems: 'center' }}
     >
-      <WCol
-        size='3'
-        className='pointer'
-        // onClick={() => {
-        //   history.push(`/regions/${subregion._id}`)
-        // }}
-      >
+      <WCol size='3' className='pointer'>
         {editingName || name === '' ? (
           <WInput
             className='table-input'
@@ -245,7 +256,14 @@ const TableEntry = (props) => {
         )}
       </WCol>
 
-      <WCol size='2'>{subregion.flag}</WCol>
+      <WCol size='2'>
+        {
+          <img
+            style={{ width: '25%', height: '25%', alignItems: 'center' }}
+            src={pathString}
+          ></img>
+        }
+      </WCol>
       <WCol
         size='3'
         className='pointer'

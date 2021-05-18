@@ -6,7 +6,11 @@ import CreateAccount from '../modals/CreateAccount'
 import NavbarOptions from '../navbar/NavbarOptions'
 import * as mutations from '../../cache/mutations'
 import SidebarContents from '../sidebar/SidebarContents'
-import { GET_DB_TODOS, GET_REGION_BY_ID } from '../../cache/queries'
+import {
+  GET_DB_TODOS,
+  GET_REGION_BY_ID,
+  GET_REGION_PATH,
+} from '../../cache/queries'
 import React, { useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import { WButton, WNavbar, WSidebar, WNavItem } from 'wt-frontend'
@@ -22,6 +26,7 @@ import globe from './globe.jpeg'
 import WMMain from 'wt-frontend/build/components/wmodal/WMMain'
 import UpdateAccount from '../modals/UpdateAccount'
 import { useHistory, useParams } from 'react-router'
+import RegionPaths from './RegionPaths'
 
 const Header = (props) => {
   // const keyCombination = (e, callback) => {
@@ -74,7 +79,14 @@ const Header = (props) => {
   const background_color = 'black'
 
   let params = useParams()
-  // const regionID = params.any
+  const regionID = params.any
+  const regionPath = useQuery(GET_REGION_PATH, {
+    variables: { _id: regionID },
+  })
+  let regionPaths = []
+  if (regionPath.data) {
+    regionPaths = regionPath.data.getRegionPath
+  }
 
   let parentRegionInfo = {}
   let parentRegionId = ''
@@ -136,6 +148,11 @@ const Header = (props) => {
               <Logo className='logo' />
             </WNavItem>
           </ul>
+          <RegionPaths
+            style={{ display: 'flex', flexDirection: 'horizontal' }}
+            regionPaths={regionPaths}
+            tps={props.tps}
+          />
           <WButton
             {...leftSiblingOptions}
             onClick={() => {
@@ -143,6 +160,7 @@ const Header = (props) => {
                 clickDisabled()
               } else {
                 history.push(`/subregion/${leftSibling}`)
+                props.tps.clearAllTransactions()
               }
             }}
             style={{ padding: '0px' }}
@@ -156,6 +174,7 @@ const Header = (props) => {
                 clickDisabled()
               } else {
                 history.push(`/subregion/${rightSibling}`)
+                props.tps.clearAllTransactions()
               }
             }}
             style={{ padding: '0px' }}

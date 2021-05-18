@@ -134,8 +134,8 @@ export const REMOVE_SUBREGION = gql`
 `
 
 export const READD_SUBREGION = gql`
-  mutation readdSubregion($_id: String!, $field: String!, $value: [String]) {
-    readdSubregion(_id: $_id, field: $field, value: $value) {
+  mutation readdSubregion($parentId: String!, $childId: String!, $index: Int!) {
+    readdSubregion(parentId: $parentId, childId: $childId, index: $index) {
       _id
       id
       name

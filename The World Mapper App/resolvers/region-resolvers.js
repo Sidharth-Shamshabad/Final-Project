@@ -46,6 +46,22 @@ module.exports = {
         (region) => region.parentRegion === 'none'
       )
     },
+    getRegionPath: async (_, args) => {
+      const { _id } = args
+      const objectId = new ObjectId(_id)
+      let region = await Region.findOne({ _id: objectId })
+      let regionPath = []
+      let currentRegion = await Region.findOne({ _id: objectId })
+      while (currentRegion.parentRegion !== 'none') {
+        regionPath.push(currentRegion)
+        currentRegion = await Region.findOne({
+          _id: currentRegion.parentRegion,
+        })
+      }
+      regionPath.push(currentRegion)
+      regionPath = regionPath.reverse()
+      return regionPath
+    },
   },
   Mutation: {
     createMapFile: async (_, args) => {
@@ -102,6 +118,7 @@ module.exports = {
       else return ''
     },
     addSubregion: async (_, args) => {
+      console.log('addSubregion working')
       const { region, index } = args
       const objectId = new ObjectId()
       const {
@@ -186,16 +203,19 @@ module.exports = {
       else return found
     },
     readdSubregion: async (_, args) => {
-      const { _id, field } = args
-      let { value } = args
-      const id = new ObjectId(_id)
+      const { parentId, childId, index } = args
+      const id = new ObjectId(parentId)
       const found = await Region.findOne({ _id: id })
-      let updatedRegion = found
-      updatedRegion[field] = value
-      console.log('initial value', found)
-      const updated = await Region.updateOne({ _id: id }, { [field]: value })
-      console.log('updated value', updatedRegion)
-      if (updated) return updatedRegion
+      let updatedRegion = found.subregions
+      updatedRegion.splice(index, 0, childId)
+      // console.log('initial value', found)
+      const updated = await Region.updateOne(
+        { _id: id },
+        { subregions: updatedRegion }
+      )
+      // console.log('updated value', updatedRegion)
+      const newUpdated = await Region.findOne({ _id: id })
+      if (updated) return newUpdated
       else return found
     },
     sortSubregions: async (_, args) => {
@@ -240,6 +260,37 @@ module.exports = {
         }
       )
       if (updated) return sortedRegions
+    },
+    reorderItems: async (_, args) => {
+      const { _id, itemId, direction } = args
+      const listId = new ObjectId(_id)
+      const found = await Todolist.findOne({ _id: listId })
+      let listItems = found.items
+      const index = listItems.findIndex(
+        (item) => item._id.toString() === itemId
+      )
+      // move selected item visually down the list
+      if (direction === 1 && index < listItems.length - 1) {
+        let next = listItems[index + 1]
+        let current = listItems[index]
+        listItems[index + 1] = current
+        listItems[index] = next
+      }
+      // move selected item visually up the list
+      else if (direction === -1 && index > 0) {
+        let prev = listItems[index - 1]
+        let current = listItems[index]
+        listItems[index - 1] = current
+        listItems[index] = prev
+      }
+      const updated = await Todolist.updateOne(
+        { _id: listId },
+        { items: listItems }
+      )
+      if (updated) return listItems
+      // return old ordering if reorder was unsuccessful
+      listItems = found.items
+      return found.items
     },
     addLandmark: async (_, args) => {
       const { _id, landmarkName, index } = args
