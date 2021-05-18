@@ -72,14 +72,11 @@ const RegionViewer = (props) => {
   console.log(rootRegions)
 
   const handleChangeParent = async (e) => {
-    const newParent = e.target.value ? e.target.value : parentRegionId
-    const prevParent = parentRegionId
-    for (let i = 0; i < rootRegions.length; i++) {
-      const element = rootRegions[i]
-      if (element.name === newParent) {
-      }
+    console.log(e.target.value)
+    if (e.target.value !== parentRegionId) {
+      props.changeRegionParent(regionID, parentRegionId, e.target.value)
+      setEditParentRegion(false)
     }
-    setEditParentRegion(false)
   }
   const clickDisabled = () => {}
   const buttonStyle = props.disabled
@@ -166,8 +163,10 @@ const RegionViewer = (props) => {
                       autoFocus={true}
                       defaultValue={parentRegionInfo.name}
                     >
-                      {rootRegions.map((x, y) => (
-                        <option key={y}>{x.name}</option>
+                      {regionPaths.map((x, y) => (
+                        <option key={y} value={x._id}>
+                          {x.name}
+                        </option>
                       ))}
                     </select>
                   ) : (
@@ -243,7 +242,7 @@ const RegionViewer = (props) => {
                     1,
                     -1
                   )
-                  refetch()
+                  props.refetchRegions()
                 }}
               >
                 <i className='material-icons' fontSize='64px'>

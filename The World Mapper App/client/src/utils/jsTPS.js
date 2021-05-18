@@ -89,10 +89,27 @@ export class EditLandmark_Transaction extends jsTPS_Transaction {
         newLandmark: this.value,
         index: this.index,
       },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
     })
+    if (data) {
+      this.prev = data.editLandmark.landmarks[this.index]
+    }
     return data
   }
-  async undoTransaction() {}
+  async undoTransaction() {
+    const { data } = await this.updateFunction({
+      variables: {
+        _id: this._id,
+        newLandmark: this.prev,
+        index: this.index,
+      },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
+    })
+    if (data) {
+      this.value = data.editLandmark.landmarks[this.index]
+    }
+    return data
+  }
 }
 
 export class UpdateLandmarks_Transaction extends jsTPS_Transaction {
@@ -177,6 +194,7 @@ export class EditRegion_Transaction extends jsTPS_Transaction {
         field: this.field,
         value: this.update,
       },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
     })
     return data
   }
@@ -189,6 +207,7 @@ export class EditRegion_Transaction extends jsTPS_Transaction {
         field: this.field,
         value: this.prev,
       },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
     })
     if (data) console.log(data)
     return data
@@ -212,6 +231,7 @@ export class DeleteSubregion_Transaction extends jsTPS_Transaction {
         parentId: this._id,
         subregionId: this.subregionId,
       },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
     })
     console.log(data)
     return data
@@ -225,8 +245,41 @@ export class DeleteSubregion_Transaction extends jsTPS_Transaction {
         field: 'subregions',
         value: this.prev,
       },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
     })
     if (data) console.log(data)
+    return data
+  }
+}
+
+export class ChangeRegionParent_Transaction extends jsTPS_Transaction {
+  constructor(subregionId, oldParentId, newParentId, callback) {
+    super()
+    this.subregionId = subregionId
+    this.oldParentId = oldParentId
+    this.newParentId = newParentId
+    this.updateFunction = callback
+  }
+  async doTransaction() {
+    const { data } = await this.updateFunction({
+      variables: {
+        subregionId: this.subregionId,
+        oldParentId: this.oldParentId,
+        newParentId: this.newParentId,
+      },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
+    })
+    return data
+  }
+  async doTransaction() {
+    const { data } = await this.updateFunction({
+      variables: {
+        subregionId: this.subregionId,
+        oldParentId: this.newParentId,
+        newParentId: this.oldParentId,
+      },
+      refetchQueries: [{ query: GET_DB_REGIONS }],
+    })
     return data
   }
 }
@@ -248,9 +301,11 @@ export class UpdateListItems_Transaction extends jsTPS_Transaction {
     this.opcode === 0
       ? ({ data } = await this.deleteFunction({
           variables: { itemId: this.itemID, _id: this.listID },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
         }))
       : ({ data } = await this.addFunction({
           variables: { item: this.item, _id: this.listID, index: this.index },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
         }))
     if (this.opcode !== 0) {
       this.item._id = this.itemID = data.addItem
@@ -263,9 +318,11 @@ export class UpdateListItems_Transaction extends jsTPS_Transaction {
     this.opcode === 1
       ? ({ data } = await this.deleteFunction({
           variables: { itemId: this.itemID, _id: this.listID },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
         }))
       : ({ data } = await this.addFunction({
           variables: { item: this.item, _id: this.listID, index: this.index },
+          refetchQueries: [{ query: GET_DB_REGIONS }],
         }))
     if (this.opcode !== 1) {
       this.item._id = this.itemID = data.addItem

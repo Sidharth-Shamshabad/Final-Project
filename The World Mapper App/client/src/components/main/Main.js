@@ -14,10 +14,10 @@ import {
 import * as mutations from '../../cache/mutations'
 import {
   EditRegion_Transaction,
-  DeleteSubregion_Transaction,
   UpdateRegions_Transaction,
   UpdateLandmarks_Transaction,
   EditLandmark_Transaction,
+  ChangeRegionParent_Transaction,
 } from '../../utils/jsTPS'
 import { GET_REGION_BY_ID, GET_DB_REGIONS } from '../../cache/queries'
 
@@ -46,31 +46,13 @@ const Main = (props) => {
   }
   document.onkeydown = keyCombination
 
-  const refetchTheRegions = async (refetch) => {
-    const { loading, error, data } = await refetch()
-    // if (data) {
-    //   regions = data.getAllTodos
-    //   setActiveList((activeList) => {
-    //     console.log(activeList)
-    //     if (activeList._id) {
-    //       let tempID = activeList._id
-    //       let list = todolists.find((list) => list._id === tempID)
-    //       console.log(list)
-    //       // setActiveList(list)
-    //       return list
-    //     }
-    //   })
-    //   console.log(data.getAllTodos)
-    // }
-  }
-
   const tpsUndo = async () => {
     const ret = await props.tps.undoTransaction()
     if (ret) {
       setCanUndo(props.tps.hasTransactionToUndo())
       setCanRedo(props.tps.hasTransactionToRedo())
     }
-    refetch()
+    await refetch()
     await props.fetchUser()
   }
 
@@ -85,7 +67,7 @@ const Main = (props) => {
       setCanRedo(props.tps.getRedoSize() > 0)
     }
     refetch()
-    await props.fetchUser()
+    await await props.fetchUser()
     console.log(canUndo, canRedo)
   }
 
@@ -96,6 +78,7 @@ const Main = (props) => {
   const [AddLandmark] = useMutation(mutations.ADD_LANDMARK)
   const [RemoveLandmark] = useMutation(mutations.REMOVE_LANDMARK)
   const [EditLandmark] = useMutation(mutations.EDIT_LANDMARK)
+  const [ChangeRegionParent] = useMutation(mutations.CHANGE_REGION_PARENT)
 
   let subregionIds = activeRegion.subregions
 
@@ -199,8 +182,20 @@ const Main = (props) => {
     props.fetchUser()
   }
 
-  console.log(props.tps.getRedoSize())
-  console.log(props.tps.getUndoSize())
+  const changeRegionParent = async (subregionId, oldParentId, newParentId) => {
+    let transaction = new ChangeRegionParent_Transaction(
+      subregionId,
+      oldParentId,
+      newParentId,
+      ChangeRegionParent
+    )
+    await props.tps.addTransaction(transaction)
+    await tpsRedo()
+    refetch()
+    props.fetchUser()
+  }
+
+  // refetch()
 
   return (
     <BrowserRouter history={history}>
@@ -285,6 +280,7 @@ const Main = (props) => {
               refetchRegions={refetch}
               updateLandmarks={updateLandmarks}
               editLandmark={editLandmark}
+              changeRegionParent={changeRegionParent}
             />
           )}
         />

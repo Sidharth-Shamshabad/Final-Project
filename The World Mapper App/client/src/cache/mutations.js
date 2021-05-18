@@ -228,6 +228,33 @@ export const REMOVE_LANDMARK = gql`
   }
 `
 
+export const CHANGE_REGION_PARENT = gql`
+  mutation changeRegionParent(
+    $subregionId: String!
+    $oldParentId: String!
+    $newParentId: String!
+  ) {
+    changeRegionParent(
+      subregionId: $subregionId
+      oldParentId: $oldParentId
+      newParentId: $newParentId
+    ) {
+      _id
+      id
+      name
+      owner
+      parentRegion
+      subregions
+      capital
+      leader
+      flag
+      landmarks
+      sortRule
+      sortDirection
+    }
+  }
+`
+
 export const ADD_ITEM = gql`
   mutation AddItem($item: ItemInput!, $_id: String!, $index: Int!) {
     addItem(item: $item, _id: $_id, index: $index)

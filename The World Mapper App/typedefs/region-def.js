@@ -33,6 +33,11 @@ const typeDefs = gql`
     addLandmark(_id: String!, landmarkName: String!, index: Int!): Region
     editLandmark(_id: String!, newLandmark: String!, index: Int!): Region
     removeLandmark(_id: String!, index: Int!): Region
+    changeRegionParent(
+      subregionId: String!
+      oldParentId: String!
+      newParentId: String!
+    ): Region
   }
   input RegionInput {
     _id: String

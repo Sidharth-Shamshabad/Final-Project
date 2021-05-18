@@ -333,5 +333,35 @@ module.exports = {
       const newRegion = await Region.findOne({ _id: _id })
       if (updatedRegion) return newRegion
     },
+    changeRegionParent: async (_, args) => {
+      const { subregionId, oldParentId, newParentId } = args
+      let oldParent = await Region.findOne({ _id: oldParentId })
+      let newParent = await Region.findOne({ _id: newParentId })
+
+      let oldParentSubregions = oldParent.subregions
+      let newParentSubregions = newParent.subregions
+
+      for (let i = 0; i < oldParentSubregions.length; i++) {
+        const element = oldParentSubregions[i]
+        if (element === subregionId) {
+          console.log('test')
+          oldParentSubregions.splice(i, 1)
+          break
+        }
+      }
+      console.log(oldParentSubregions)
+      let oldParentUpdated = await Region.updateOne(
+        { _id: oldParentId },
+        { subregions: oldParentSubregions }
+      )
+      newParentSubregions.push(subregionId)
+      let newParentUpdated = await Region.updateOne(
+        { _id: newParentId },
+        { subregions: newParentSubregions }
+      )
+      console.log(newParentSubregions)
+      let updatedParent = await Region.findOne({ _id: newParentId })
+      if (newParentUpdated) return updatedParent
+    },
   },
 }

@@ -63,6 +63,8 @@ const TableHeader = (props) => {
             style={{ color: 'green', padding: '0px' }}
             onClick={() => {
               props.addSubregion(props.parentRegionId)
+              props.refetchRegions()
+              props.fetchUser()
             }}
           >
             <i className='material-icons' fontSize='64px'>

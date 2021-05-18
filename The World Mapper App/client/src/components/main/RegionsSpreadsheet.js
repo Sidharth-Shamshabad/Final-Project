@@ -18,18 +18,24 @@ const RegionsSpreadsheet = (props) => {
   const auth = props.user === null ? false : true
   let params = useParams()
   const regionID = params.any
+  // props.refetchRegions()
 
   const { loading, error, data, refetch } = useQuery(GET_REGION_BY_ID, {
     variables: { _id: regionID },
     refetchQueries: [{ query: GET_DB_REGIONS }],
   })
 
-  useEffect(() => {
-    if (data) {
-      const currentActiveRegion = data.getRegionById
-      props.setActiveRegion(currentActiveRegion)
-    }
-  }, [data])
+  if (data) {
+    const currentActiveRegion = data.getRegionById
+    props.setActiveRegion(currentActiveRegion)
+  }
+
+  // useEffect(() => {
+  //   if (data) {
+  //     const currentActiveRegion = data.getRegionById
+  //     props.setActiveRegion(currentActiveRegion)
+  //   }
+  // }, [data])
 
   let subregionIds = props.activeRegion.subregions
   let history = useHistory()
@@ -54,7 +60,7 @@ const RegionsSpreadsheet = (props) => {
               fetchUser={props.fetchUser}
               user={props.user}
               style={{ paddingBottom: '0px', marginBottom: '0px' }}
-              refetchRegions={refetch}
+              refetchRegions={props.refetchRegions}
               undo={props.undo}
               redo={props.redo}
               canUndo={props.canUndo}
@@ -70,6 +76,7 @@ const RegionsSpreadsheet = (props) => {
               editSubregion={props.editSubregion}
               deleteSubregion={props.deleteSubregion}
               refetchRegions={props.refetchRegions}
+              tps={props.tps}
             />
           </WMMain>
         </WLayout>

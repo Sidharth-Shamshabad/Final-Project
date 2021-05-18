@@ -144,7 +144,13 @@ const Header = (props) => {
       <WLHeader>
         <WNavbar style={{ backgroundColor: background_color }}>
           <ul>
-            <WNavItem onClick={() => history.push('/home')} className='pointer'>
+            <WNavItem
+              onClick={() => {
+                history.push('/home')
+                props.tps.clearAllTransactions()
+              }}
+              className='pointer'
+            >
               <Logo className='logo' />
             </WNavItem>
           </ul>

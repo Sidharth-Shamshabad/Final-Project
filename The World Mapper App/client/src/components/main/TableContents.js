@@ -35,6 +35,7 @@ const TableContents = (props) => {
           deleteSubregion={props.deleteSubregion}
           history={history}
           refetchRegions={props.refetchRegions}
+          tps={props.tps}
         />
       ))}
     </div>

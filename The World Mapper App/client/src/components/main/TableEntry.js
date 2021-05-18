@@ -168,7 +168,10 @@ const TableEntry = (props) => {
             >
               <a
                 style={{ color: 'blue' }}
-                onClick={() => history.push(`/regions/${subregion._id}`)}
+                onClick={() => {
+                  history.push(`/regions/${subregion._id}`)
+                  props.tps.clearAllTransactions()
+                }}
               >
                 {subregion.name}
               </a>
@@ -272,7 +275,12 @@ const TableEntry = (props) => {
         //   history.push(`/subregion/${entry}`)
         // }}
       >
-        <div onClick={() => handlePushToLandmarks()}>
+        <div
+          onClick={() => {
+            handlePushToLandmarks()
+            props.tps.clearAllTransactions()
+          }}
+        >
           {landmarksString === '' ? 'No Landmarks' : landmarksString}
         </div>
       </WCol>
